@@ -18,3 +18,31 @@ Note: From this analysis, we need to figure out:
 * c. **Adapter Type**: Illumina Universal Adapter(AGATCGGAAGAG), Illumina Small RNA 3' Adapter(TGGAATTCTCGG), Illumina Small RNA 5' Adapter(GATCGTCGGACT), Nextera Transposase Sequence(CTGTCTCTTATA) and SOLID Small RNA Adapter(CGCCTTGGCCGT).
 
 If no adaptor is found in the RAW FASTQ files, we are done for this step, and use the RAW FASTQ files in subsequent analysis. Otherwise, we have to trim the adaptors.
+
+### 2. Quantification by Salmon
+
+* Salmon is alignment free and hence ultra-fast!  
+* Salmon is easy to use: there is only a few options you need to specify. Salmon could figure some options out by itself.
+* Just provide the mapping file of transcripts to genes, then it will generate the quantification results of both transcripts and genes.
+* Salmon predicts the library type by default. If you don't the library type of your samples, you could use it to figure out.
+
+### 3. Quantification by RSEM
+
+* RSEM is a well-accepted gold standard for RNA-Seq quantification.
+* RSEM is a alignment-based quantification method, which makes it a little bit more complicated to use: you have to specify some options.
+* RSEM generates the BAM file of transcriptomic alignment by default, and could also generate the one of genomic alignment by specify the corresponding arguments.
+
+### 4. Quantifcation by STAR-HTSeq Strategy
+
+* STAR-HTSeq strategy is recommended by GDC.
+* The 2-pass STAR alignment is famous for its speed and accuracy.
+* HTSeq is very popular to quantify the expression of genes.
+
+### 5. Gene Body Coverage Analysis
+
+* This analysis plots the distributions of reads along the tanscripts/gens. It is used to evaluate the quality of sample library, especially the status of RNA degradation.
+
+### 6. Quantification Summary
+
+* The expression matrix of all samples under a certain quantification method is generated
+* The correlation between quantification methods is calculated.
