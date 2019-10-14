@@ -1,1 +1,2 @@
-# RNASeq_Bulk_Alignment
+# RNASeq_Quantification_Pipelines
+
