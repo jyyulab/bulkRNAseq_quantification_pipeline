@@ -1,5 +1,18 @@
 #!/usr/bin/env Rscript
 
+####################
+## Usage: Rscript 05_genebodyCoverage.R readsDistribution.txt prefix_of_output
+##
+## Inputs: Two Arguments
+##      1) readsDistribution.txt: this file is generated in previous step. It's the reads counts mapped to each bin for each TRANSCRIPT.
+##      2) prefix_of_output: The is the prefix of the outputs, including prefix_of_output.txt and prefix_of_output.pdf
+##
+## Outputs:
+##      1) prefix_of_output.txt: it's the reads counts mapped to each bin for each GENE.
+##      2) prefix_of_output.pdf: visulization of reads distribution along GENEs.
+####################
+
+
 args = commandArgs(trailingOnly=TRUE)
 paste0(args[1], " is in process...")
 
