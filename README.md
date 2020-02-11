@@ -17,6 +17,8 @@ Note: From this analysis, we need to figure out:
 * b. **Sequence Length**: The most common values are 46/45, 76/75, 101/100 or 151/150.
 * c. **Adapter Type**: Illumina Universal Adapter(AGATCGGAAGAG), Illumina Small RNA 3' Adapter(TGGAATTCTCGG), Illumina Small RNA 5' Adapter(GATCGTCGGACT), Nextera Transposase Sequence(CTGTCTCTTATA) and SOLID Small RNA Adapter(CGCCTTGGCCGT).
 
+Here is a nice tutorial for FastQC: https://www.youtube.com/watch?v=bz93ReOv87Y
+
 If no adaptor is found in the RAW FASTQ files, we are done for this step, and use the RAW FASTQ files in subsequent analysis. Otherwise, we have to trim the adaptors.
 
 ### 2. Quantification by Salmon
