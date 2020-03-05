@@ -24,6 +24,7 @@ $fastqc sample_R2.raw.fq.gz -o output_dir
 ########## If no adaptor is found in the RAW FASTQ files, we are done for this step, and use the RAW FASTQ files in subsequent analysis. Else, we have to trim the adaptors. ##########
 
 ## 2. Adaptor Trimming
+module load python/3.6.1
 
 cutadapt=/hpcf/apps/python/install/3.6.1/bin/cutadapt
 fastqc=/research/rgs01/applications/hpcf/apps/fastqc/install/0.11.5/fastqc
