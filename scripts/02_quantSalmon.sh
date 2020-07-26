@@ -32,3 +32,8 @@ $salmon quant -i $index -l A -p 8 -g $tr2gene -1 $indir/sample_R1.clean.fq.gz -2
 # 3) lib_format_counts.json: library type is predicted: IOM(inward, outward, matching) + SU(stranded, unstranded) + FR(Forward, Reverse)
 # 4) For more information, please check out here: https://salmon.readthedocs.io/en/latest/salmon.html.
 
+# NOTE
+# 1) The default index files were generated under k=31. This is recommanded by Salmon, and works well for reads of 75bp or longer. If your reads are shorter than 31bp, no hits will be matched for them. In this case, you have to generate the index files by your self. The script to generate the index files is here: /research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/Salmon/00_buildIndex_quasi.sh.
+
+
+
