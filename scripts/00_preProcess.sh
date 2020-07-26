@@ -17,7 +17,11 @@ cat sample1_L001_R2.fq.gz sample1_L002_R2.fq.gz sample1_L003_R2.fq.gz sample1_L0
 
 ## 1.2 If you start from BAM files, usually downloaded from some databases, you need to convert them into FASTQ files.
 
-bedtools=/research/rgs01/applications/hpcf/apps/bedtools/install/2.25.0/bin/bedtools
+bedtools=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_apps/apps/bedtools2/bin/bedtools
+
 $bedtools bamtofastq -i input.bam -fq output.fqi # For single-end sequencing
 $bedtools bamtofastq -i input.bam -fq output_R1.fq -fq2 output_R2.fq # # For paired-end sequencing
 
+# NOTE:
+# 1) The BAM files of paired-end sequencing, MUST BE SORTED by NAME. To sort the BAM files, please use "samtools sort -n -o     output.sorted input.bam".
+# 2) Duplication issue. Multiple alignments (>1 hits for a single read) may exist in the BAM files. In this case, bedtools     (v2.25 and earlier) would parse each alignment and generate two mates. As a results, the reads with multiple alignments wou    ld be duplicated in the fastq files. The duplicateion issue would cause errors in RSEM analysis and improper quantificaiton     in Salmon analysis (the expression of transcripts/genes with duplicated reads would be over-estimated). The author has fix    ed this problem in the version of 2.29 and later.
