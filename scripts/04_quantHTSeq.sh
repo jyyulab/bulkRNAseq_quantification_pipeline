@@ -39,7 +39,10 @@ $star --runMode alignReads --runThreadN 8 --twopassMode Basic \
     --outFilterMatchNminOverLread 0.33 --outFilterScoreMinOverLread 0.33 --outFilterMismatchNoverLmax 0.1 --outFilterMismatchNmax 999 --outFilterMultimapNmax 20 --outFilterType BySJout --outSAMstrandField intronMotif \
     --readFilesCommand zcat --genomeDir $index_hg38oh100 --readFilesIn $indir/sample.clean.fq.gz
 # HTSeq Quantification
+module load python/3.6.1
 $htseq -f bam -r pos -s reverse -a 10 -t exon -i gene_id -m intersection-nonempty --nonunique none --secondary-alignments score --supplementary-alignments score $outdir/sample/Aligned.out.bam $gtf_hg38 > $outdir/sample/htseq_counts.txt
+
+
 
 # Gene Body Coverage
 $samtools sort $outdir/sample/Aligned.toTranscriptome.out.bam $outdir/sample/Aligned.toTranscriptome.out.sorted && $samtools index $outdir/sample/Aligned.toTranscriptome.out.sorted.bam
@@ -55,6 +58,7 @@ $star --runMode alignReads --runThreadN 8 --twopassMode Basic \
     --outFilterMatchNminOverLread 0.33 --outFilterScoreMinOverLread 0.33 --outFilterMismatchNoverLmax 0.1 --outFilterMismatchNmax 999 --outFilterMultimapNmax 20 --outFilterType BySJout --outSAMstrandField intronMotif \
     --readFilesCommand zcat --genomeDir $index_hg38oh100 --readFilesIn $indir/sample_R1.clean.fq.gz $indir/sample_R2.clean.fq.gz
 # HTSeq Quantification
+module load python/3.6.1
 $htseq-count -f bam -r pos -s reverse -a 10 -t exon -i gene_id -m intersection-nonempty --nonunique none --secondary-alignments score --supplementary-alignments score $outdir/sample/Aligned.out.bam $gtf_hg38 > $outdir/sample/htseq_counts.txt
 
 # Gene Body Coverage
@@ -75,4 +79,6 @@ $genebody $outdir/sample/readsDistribution.txt $outdir/sample/genebodyCoverage
 # 2) Aligned.toTranscriptome.out.bam: Alignments to reference transcriptome.
 # 3) htseq_counts.txt: HTSeq gene expression quantification, COUNTS.
 
+# Others
+# 1) htseq-count requires libcrypto.so.1.0.0, which may not be properly installed under some python versions. If you get a error message that this libary is missing, please load the python/3.6.1 to fix it.
 
