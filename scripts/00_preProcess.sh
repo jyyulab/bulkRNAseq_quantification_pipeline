@@ -19,8 +19,8 @@ cat sample1_L001_R2.fq.gz sample1_L002_R2.fq.gz sample1_L003_R2.fq.gz sample1_L0
 
 bedtools=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_apps/apps/bedtools2/bin/bedtools
 
-$bedtools bamtofastq -i input.bam -fq output.fqi # For single-end sequencing
-$bedtools bamtofastq -i input.bam -fq output_R1.fq -fq2 output_R2.fq # # For paired-end sequencing
+$bedtools bamtofastq -i input.bam -fq output.raw.fq # For single-end sequencing
+$bedtools bamtofastq -i input.bam -fq output_R1.raw.fq -fq2 output_R2.raw.fq # # For paired-end sequencing
 
 # NOTE:
 # 1) The BAM files of paired-end sequencing, MUST BE SORTED by NAME. To sort the BAM files, please use "samtools sort -n -o output.sorted input.bam".
