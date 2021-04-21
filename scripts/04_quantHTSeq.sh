@@ -59,7 +59,7 @@ $star --runMode alignReads --runThreadN 8 --twopassMode Basic \
     --readFilesCommand zcat --genomeDir $index_hg38oh100 --readFilesIn $indir/sample_R1.clean.fq.gz $indir/sample_R2.clean.fq.gz
 # HTSeq Quantification
 module load python/3.6.1
-$htseq-count -f bam -r pos -s reverse -a 10 -t exon -i gene_id -m intersection-nonempty --nonunique none --secondary-alignments score --supplementary-alignments score $outdir/sample/Aligned.out.bam $gtf_hg38 > $outdir/sample/htseq_counts.txt
+$htseq -f bam -r pos -s reverse -a 10 -t exon -i gene_id -m intersection-nonempty --nonunique none --secondary-alignments score --supplementary-alignments score $outdir/sample/Aligned.out.bam $gtf_hg38 > $outdir/sample/htseq_counts.txt
 
 # Gene Body Coverage
 $samtools sort $outdir/sample/Aligned.toTranscriptome.out.bam $outdir/sample/Aligned.toTranscriptome.out.sorted && $samtools index $outdir/sample/Aligned.toTranscriptome.out.sorted.bam
