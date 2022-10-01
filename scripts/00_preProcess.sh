@@ -23,5 +23,5 @@ $bedtools bamtofastq -i input.bam -fq output.raw.fq # For single-end sequencing
 $bedtools bamtofastq -i input.bam -fq output_R1.raw.fq -fq2 output_R2.raw.fq # # For paired-end sequencing
 
 # NOTE:
-# 1) The BAM files of paired-end sequencing, MUST BE SORTED by NAME. To sort the BAM files, please use "samtools sort -n -o output.sorted input.bam".
+# 1) The BAM files of paired-end sequencing, MUST BE SORTED by NAME. To sort the BAM files, please use "samtools sort -n -o output.sorted input.bam". [* IF Error: fail to open file output.sorted, please use "samtools sort -n input.bam output.sorted"]
 # 2) Duplication issue. Multiple alignments (>1 hits for a single read) may exist in the BAM files. In this case, bedtools (v2.25 and earlier) would parse each alignment and generate two mates. As a results, the reads with multiple alignments would be duplicated in the fastq files. The duplicateion issue would cause errors in RSEM analysis and improper quantificaiton in Salmon analysis (the expression of transcripts/genes with duplicated reads would be over-estimated). The author has fixed this problem in the version of 2.29 and later.
