@@ -17,7 +17,7 @@ cat sample1_L001_R2.fq.gz sample1_L002_R2.fq.gz sample1_L003_R2.fq.gz sample1_L0
 
 ## 1.2 If you start from BAM files, usually downloaded from some databases, you need to convert them into FASTQ files.
 
-bedtools=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_apps/apps/bedtools2/bin/bedtools
+bedtools=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_apps/apps/bedtools2/bin/bedtools
 
 $bedtools bamtofastq -i input.bam -fq output.raw.fq # For single-end sequencing
 $bedtools bamtofastq -i input.bam -fq output_R1.raw.fq -fq2 output_R2.raw.fq # # For paired-end sequencing
