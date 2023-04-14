@@ -6,15 +6,15 @@
 #BSUB -q standard
 
 # software
-salmon=/research/projects/yu3grp/scRNASeq/yu3grp/qpan/Software/Salmon/bin/salmon
+salmon=/research_jude/rgs01_jude/groups/yu3grp/projects/scRNASeq/yu3grp/qpan/Software/Salmon/bin/salmon
 
 # database
-index_hg38=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/Salmon/index_quasi
-index_hg19=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/Salmon/index_quasi
-index_mm10=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/Salmon/index_quasi
-tr2gene_hg38=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/idmap.tr2gene.txt
-tr2gene_hg19=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/idmap.tr2gene.txt
-tr2gene_mm10=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/idmap.tr2gene.txt
+index_hg38=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/Salmon/index_quasi
+index_hg19=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/Salmon/index_quasi
+index_mm10=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/Salmon/index_quasi
+tr2gene_hg38=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/idmap.tr2gene.txt
+tr2gene_hg19=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/idmap.tr2gene.txt
+tr2gene_mm10=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/idmap.tr2gene.txt
 
 # I/O
 indir=
