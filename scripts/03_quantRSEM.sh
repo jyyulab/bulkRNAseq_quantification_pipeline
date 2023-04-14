@@ -6,21 +6,21 @@
 #BSUB -q standard
 
 # software
-rsem=/research/rgs01/applications/hpcf/apps/RSEM/1.3.0/rsem-calculate-expression
-bowtie2=/research/rgs01/applications/hpcf/apps/bowtie/install/2.2.9/bin
-bedtools=/research/rgs01/applications/hpcf/apps/bedtools/install/2.25.0/bin/bedtools
-genebody=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/git_repo/RNASeq_pipelines/05_genebodyCoverage.R
+rsem=/research_jude/rgs01_jude/applications/hpcf/apps/RSEM/1.3.0/rsem-calculate-expression
+bowtie2=/research_jude/rgs01_jude/applications/hpcf/apps/bowtie/install/2.2.9/bin
+bedtools=/research_jude/rgs01_jude/applications/hpcf/apps/bedtools/install/2.25.0/bin/bedtools
+genebody=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/git_repo/RNASeq_pipelines/05_genebodyCoverage.R
 
 # database
-reference_hg38bowtie2=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/RSEM/index_bowtie2/hg38
-reference_hg38star=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/RSEM/index_star/hg38
-reference_hg19bowtie2=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/RSEM/index_bowtie2/hg19
-reference_hg19star=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/RSEM/index_star/hg19
-reference_mm10bowtie2=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/RSEM/index_bowtie2/mm10
-reference_mm10star=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/RSEM/index_star/mm10
-binlist_hg38=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/binlist_150.txt
-binlist_hg19=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/binlist_150.txt
-binlist_mm10=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/binlist_150.txt
+reference_hg38bowtie2=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/RSEM/index_bowtie2/hg38
+reference_hg38star=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/RSEM/index_star/hg38
+reference_hg19bowtie2=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/RSEM/index_bowtie2/hg19
+reference_hg19star=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/RSEM/index_star/hg19
+reference_mm10bowtie2=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/RSEM/index_bowtie2/mm10
+reference_mm10star=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/RSEM/index_star/mm10
+binlist_hg38=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/binlist_150.txt
+binlist_hg19=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/binlist_150.txt
+binlist_mm10=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/binlist_150.txt
 
 # I/O
 indir=
