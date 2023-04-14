@@ -6,25 +6,25 @@
 #BSUB -q standard
 
 # software
-star=/research/rgs01/applications/hpcf/apps/star/install/2.5.3a/bin/STAR
-htseq=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/conda_env/yulab_env/bin/htseq-count
-bedtools=/research/rgs01/applications/hpcf/apps/bedtools/install/2.25.0/bin/bedtools-bed
-samtools=/research/rgs01/applications/hpcf/apps/samtools/install/1.2/bin/samtools
-genebody=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/git_repo/RNASeq_pipelines/05_genebodyCoverage.R
+star=/research_jude/rgs01_jude/applications/hpcf/apps/star/install/2.5.3a/bin/STAR
+htseq=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNA-seq/bin/htseq-count
+bedtools=/research_jude/rgs01_jude/applications/hpcf/apps/bedtools/install/2.25.0/bin/bedtools-bed
+samtools=/research_jude/rgs01_jude/applications/hpcf/apps/samtools/install/1.2/bin/samtools
+genebody=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/git_repo/RNASeq_pipelines/05_genebodyCoverage.R
 
 # database
-index_hg38oh100=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/STAR/index_overhang100
-index_hg38oh150=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/STAR/index_overhang150
-index_hg19oh100=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/STAR/index_overhang100
-index_hg19oh150=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/STAR/index_overhang150
-index_mm10oh100=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/STAR/index_overhang100
-index_mm10oh150=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/STAR/index_overhang150
-binlist_hg38=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/binlist_150.txt
-binlist_hg19=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/binlist_150.txt
-binlist_mm10=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/binlist_150.txt
-gtf_hg38=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/annotation.gtf
-gtf_hg19=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/annotation.gtf
-gtf_mm10=/research/rgs01/project_space/yu3grp/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/annotation.gtf
+index_hg38oh100=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/STAR/index_overhang100
+index_hg38oh150=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/STAR/index_overhang150
+index_hg19oh100=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/STAR/index_overhang100
+index_hg19oh150=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/STAR/index_overhang150
+index_mm10oh100=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/STAR/index_overhang100
+index_mm10oh150=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/STAR/index_overhang150
+binlist_hg38=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/binlist_150.txt
+binlist_hg19=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/binlist_150.txt
+binlist_mm10=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/binlist_150.txt
+gtf_hg38=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/annotation.gtf
+gtf_hg19=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/annotation.gtf
+gtf_mm10=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/annotation.gtf
 
 # I/O
 indir=
