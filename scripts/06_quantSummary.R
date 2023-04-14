@@ -1,9 +1,9 @@
 #!/usr/bin/env Rscript
 
 ## 0 configure the inputs
-indir_salmon <- "/research/rgs01/project_space/yu3grp/brainTumor_JY/yu3grp/m6A/m6A/04_quantification/01_salmon" # dir of Salmon Outputs
-indir_rsem <- "/research/rgs01/project_space/yu3grp/brainTumor_JY/yu3grp/m6A/m6A/04_quantification/02_rsem" # dir of RSEM Outputs
-outdir <- "/research/rgs01/project_space/yu3grp/brainTumor_JY/yu3grp/m6A/m6A/04_quantification" # dir for Summary, including Correlation and Master Tables
+indir_salmon <- "/research_jude/rgs01_jude/groups/yu3grp/projects/brainTumor_JY/yu3grp/m6A/m6A/04_quantification/01_salmon" # dir of Salmon Outputs
+indir_rsem <- "/research_jude/rgs01_jude/groups/yu3grp/projects/brainTumor_JY/yu3grp/m6A/m6A/04_quantification/02_rsem" # dir of RSEM Outputs
+outdir <- "/research_jude/rgs01_jude/groups/yu3grp/projects/brainTumor_JY/yu3grp/m6A/m6A/04_quantification" # dir for Summary, including Correlation and Master Tables
 samples <- c("sample1", "sample2")
 cat("The input information has been read!\n")
 
