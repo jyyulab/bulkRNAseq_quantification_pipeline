@@ -7,7 +7,7 @@
 
 ## 1. Quality Control of RAQ FASTQ Files by FastQC
 
-fastqc=/research/rgs01/applications/hpcf/apps/fastqc/install/0.11.5/fastqc
+fastqc=/research_jude/rgs01_jude/applications/hpcf/apps/fastqc/install/0.11.5/fastqc
 
 # For Single-end Reads
 $fastqc sample.raw.fq.gz -o output_dir
@@ -26,8 +26,8 @@ $fastqc sample_R2.raw.fq.gz -o output_dir
 ## 2. Adaptor Trimming
 module load python/3.6.1
 
-cutadapt=/hpcf/apps/python/install/3.6.1/bin/cutadapt
-fastqc=/research/rgs01/applications/hpcf/apps/fastqc/install/0.11.5/fastqc
+cutadapt=/research_jude/rgs01_jude/applications/hpcf/apps/python/install/3.6.1/bin/cutadapt
+fastqc=/research_jude/rgs01_jude/applications/hpcf/apps/fastqc/install/0.11.5/fastqc
 
 # For Single-end Reads
 $cutadapt -a AGATCGGAAGAG --trim-n --max-n=0.5 --quality-base=33 -q 30 -m 30 -o sample.clean.fq.gz sample.raw.fq.gz
