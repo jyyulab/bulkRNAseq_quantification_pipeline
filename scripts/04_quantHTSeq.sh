@@ -7,7 +7,7 @@
 
 # software
 star=/research_jude/rgs01_jude/applications/hpcf/apps/star/install/2.5.3a/bin/STAR
-htseq=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNA-seq/bin/htseq-count
+htseq=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/bin/htseq-count
 bedtools=/research_jude/rgs01_jude/applications/hpcf/apps/bedtools/install/2.25.0/bin/bedtools-bed
 samtools=/research_jude/rgs01_jude/applications/hpcf/apps/samtools/install/1.2/bin/samtools
 genebody=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/git_repo/RNASeq_pipelines/05_genebodyCoverage.R
@@ -22,9 +22,9 @@ index_mm10oh150=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3
 binlist_hg38=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/binlist_150.txt
 binlist_hg19=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/binlist_150.txt
 binlist_mm10=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/binlist_150.txt
-gtf_hg38=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/annotation.gtf
-gtf_hg19=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/annotation.gtf
-gtf_mm10=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/annotation.gtf
+gtf_hg38=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release32/gencode.v32.annotation.gtf
+gtf_hg19=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release32/gencode.v32.annotation.gtf
+gtf_mm10=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM23/gencode.vM23.annotation.gtf
 
 # I/O
 indir=
@@ -40,7 +40,7 @@ $star --runMode alignReads --runThreadN 8 --twopassMode Basic \
     --readFilesCommand zcat --genomeDir $index_hg38oh100 --readFilesIn $indir/sample.clean.fq.gz
 # HTSeq Quantification
 module load python/3.6.1
-$htseq -f bam -r pos -s reverse -a 10 -t exon -i gene_id -m intersection-nonempty --nonunique none --secondary-alignments score --supplementary-alignments score $outdir/sample/Aligned.out.bam $gtf_hg38 > $outdir/sample/htseq_counts.txt
+$htseq -f bam -r pos -s reverse -a 10 -t exon -i gene_id -m intersection-nonempty --nonunique none --secondary-alignments score --supplementary-alignments score $outdir/sample/Aligned.sortedByCoord.out.bam $gtf_hg38 > $outdir/sample/htseq_counts.txt
 
 
 
