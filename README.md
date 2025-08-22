@@ -1,50 +1,174 @@
-# RNASeq_Quantification_Pipelines
+# just-the-docs-template
 
-## Overview
-![Picture1](https://user-images.githubusercontent.com/33663247/66729168-3ef9f700-ee0f-11e9-866a-d4a621466c9d.png)
+This is a *bare-minimum* template to create a [Jekyll] site that:
 
+- uses the [Just the Docs] theme;
+- can be built and published on [GitHub Pages];
+- can be built and previewed locally, and published on other platforms.
 
-### 0. Preprocess to prepare the RAW FASTQ
+More specifically, the created site:
 
-* If you have multiple fastq files for each sample, usually generated from different lanes, you need to merge them into one.
-* If you start from BAM files, usually downloaded from some databases, you need to convert them into FASTQ files.
+- uses a gem-based approach, i.e. uses a `Gemfile` and loads the `just-the-docs` gem;
+- uses the [GitHub Pages / Actions workflow] to build and publish the site on GitHub Pages.
 
+To get started with creating a site, simply:
 
-### 1. Quality Control of RAQ FASTQ Files by FastQC
+1. click "[use this template]" to create a GitHub repository
+2. go to Settings > Pages > Build and deployment > Source, and select GitHub Actions
 
-Note: From this analysis, we need to figure out:
-* a. **Encoding of Phred Scores**: Phred+33 is listed as Illumina 1.9/Sanger, while Phred+64 encoding as illumina 1.5 or lower. (Find more details here: https://sequencing.qcfail.com/articles/incorrect-encoding-of-phred-scores/)
-* b. **Sequence Length**: The most common values are 46/45, 76/75, 101/100 or 151/150.
-* c. **Adapter Type**: Illumina Universal Adapter(AGATCGGAAGAG), Illumina Small RNA 3' Adapter(TGGAATTCTCGG), Illumina Small RNA 5' Adapter(GATCGTCGGACT), Nextera Transposase Sequence(CTGTCTCTTATA) and SOLID Small RNA Adapter(CGCCTTGGCCGT).
+If you want to maintain your docs in the `docs` directory of an existing project repo, see [Hosting your docs from an existing project repo](#hosting-your-docs-from-an-existing-project-repo).
 
-Here is a nice tutorial for FastQC: https://www.youtube.com/watch?v=bz93ReOv87Y
+After completing the creation of your new site on GitHub, update it as needed:
 
-If no adaptor is found in the RAW FASTQ files, we are done for this step, and use the RAW FASTQ files in subsequent analysis. Otherwise, we have to trim the adaptors.
+## Replace the content of the template pages
 
-### 2. Quantification by Salmon
+Update the following files to your own content:
 
-* Salmon is alignment-free and hence ultra-fast!  
-* Salmon is easy to use: there is only a few options you need to specify. Salmon could figure some options out by itself.
-* Just provide the mapping file of transcripts to genes, then it will generate the quantification results of both transcripts and genes.
-* Salmon predicts the library type by default. If you don't the library type of your samples, you could use it to figure out.
+- `index.md` (your new home page)
+- `README.md` (information for those who access your site repo on GitHub)
 
-### 3. Quantification by RSEM
+## Changing the version of the theme and/or Jekyll
 
-* RSEM is a well-accepted gold standard for RNA-Seq quantification.
-* RSEM is a alignment-based quantification method, which makes it a little bit more complicated to use: you have to specify some options.
-* RSEM generates the BAM file of transcriptomic alignment by default, and could also generate the one of genomic alignment by specify the corresponding arguments.
+Simply edit the relevant line(s) in the `Gemfile`.
 
-### 4. Quantifcation by STAR-HTSeq Strategy
+## Adding a plugin
 
-* STAR-HTSeq strategy is recommended by GDC.
-* The 2-pass STAR alignment is famous for its speed and accuracy.
-* HTSeq is very popular to quantify the expression of genes.
+The Just the Docs theme automatically includes the [`jekyll-seo-tag`] plugin.
 
-### 5. Gene Body Coverage Analysis
+To add an extra plugin, you need to add it in the `Gemfile` *and* in `_config.yml`. For example, to add [`jekyll-default-layout`]:
 
-* This analysis plots the distributions of reads along the tanscripts/gens. It is used to evaluate the quality of sample library, especially the status of RNA degradation.
+- Add the following to your site's `Gemfile`:
 
-### 6. Quantification Summary
+  ```ruby
+  gem "jekyll-default-layout"
+  ```
 
-* The expression matrix of all samples under a certain quantification method is generated
-* The correlation between quantification methods is calculated.
+- And add the following to your site's `_config.yml`:
+
+  ```yaml
+  plugins:
+    - jekyll-default-layout
+  ```
+
+Note: If you are using a Jekyll version less than 3.5.0, use the `gems` key instead of `plugins`.
+
+## Publishing your site on GitHub Pages
+
+1.  If your created site is `YOUR-USERNAME/YOUR-SITE-NAME`, update `_config.yml` to:
+
+    ```yaml
+    title: YOUR TITLE
+    description: YOUR DESCRIPTION
+    theme: just-the-docs
+
+    url: https://YOUR-USERNAME.github.io/YOUR-SITE-NAME
+
+    aux_links: # remove if you don't want this link to appear on your pages
+      Template Repository: https://github.com/YOUR-USERNAME/YOUR-SITE-NAME
+    ```
+
+2.  Push your updated `_config.yml` to your site on GitHub.
+
+3.  In your newly created repo on GitHub:
+    - go to the `Settings` tab -> `Pages` -> `Build and deployment`, then select `Source`: `GitHub Actions`.
+    - if there were any failed Actions, go to the `Actions` tab and click on `Re-run jobs`.
+
+## Building and previewing your site locally
+
+Assuming [Jekyll] and [Bundler] are installed on your computer:
+
+1.  Change your working directory to the root directory of your site.
+
+2.  Run `bundle install`.
+
+3.  Run `bundle exec jekyll serve` to build your site and preview it at `localhost:4000`.
+
+    The built site is stored in the directory `_site`.
+
+## Publishing your built site on a different platform
+
+Just upload all the files in the directory `_site`.
+
+## Customization
+
+You're free to customize sites that you create with this template, however you like!
+
+[Browse our documentation][Just the Docs] to learn more about how to use this theme.
+
+## Hosting your docs from an existing project repo
+
+You might want to maintain your docs in an existing project repo. Instead of creating a new repo using the [just-the-docs template](https://github.com/just-the-docs/just-the-docs-template), you can copy the template files into your existing repo and configure the template's Github Actions workflow to build from a `docs` directory. You can clone the template to your local machine or download the `.zip` file to access the files.
+
+### Copy the template files
+
+1.  Create a `.github/workflows` directory at your project root if your repo doesn't already have one. Copy the `pages.yml` file into this directory. GitHub Actions searches this directory for workflow files.
+
+2.  Create a `docs` directory at your project root and copy all remaining template files into this directory.
+
+### Modify the GitHub Actions workflow
+
+The GitHub Actions workflow that builds and deploys your site to Github Pages is defined by the `pages.yml` file. You'll need to edit this file to that so that your build and deploy steps look to your `docs` directory, rather than the project root.
+
+1.  Set the default `working-directory` param for the build job.
+
+    ```yaml
+    build:
+      runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: docs
+    ```
+
+2.  Set the `working-directory` param for the Setup Ruby step.
+
+    ```yaml
+    - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          cache-version: 0
+          working-directory: '${{ github.workspace }}/docs'
+    ```
+
+3.  Set the path param for the Upload artifact step:
+
+    ```yaml
+    - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_site/
+    ```
+
+4.  Modify the trigger so that only changes within the `docs` directory start the workflow. Otherwise, every change to your project (even those that don't affect the docs) would trigger a new site build and deploy.
+
+    ```yaml
+    on:
+      push:
+        branches:
+          - "main"
+        paths:
+          - "docs/**"
+    ```
+
+## Licensing and Attribution
+
+This repository is licensed under the [MIT License]. You are generally free to reuse or extend upon this code as you see fit; just include the original copy of the license (which is preserved when you "make a template"). While it's not necessary, we'd love to hear from you if you do use this template, and how we can improve it for future use!
+
+The deployment GitHub Actions workflow is heavily based on GitHub's mixed-party [starter workflows]. A copy of their MIT License is available in [actions/starter-workflows].
+
+----
+
+[^1]: [It can take up to 10 minutes for changes to your site to publish after you push the changes to GitHub](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/creating-a-github-pages-site-with-jekyll#creating-your-site).
+
+[Jekyll]: https://jekyllrb.com
+[Just the Docs]: https://just-the-docs.github.io/just-the-docs/
+[GitHub Pages]: https://docs.github.com/en/pages
+[GitHub Pages / Actions workflow]: https://github.blog/changelog/2022-07-27-github-pages-custom-github-actions-workflows-beta/
+[Bundler]: https://bundler.io
+[use this template]: https://github.com/just-the-docs/just-the-docs-template/generate
+[`jekyll-default-layout`]: https://github.com/benbalter/jekyll-default-layout
+[`jekyll-seo-tag`]: https://jekyll.github.io/jekyll-seo-tag
+[MIT License]: https://en.wikipedia.org/wiki/MIT_License
+[starter workflows]: https://github.com/actions/starter-workflows/blob/main/pages/jekyll.yml
+[actions/starter-workflows]: https://github.com/actions/starter-workflows/blob/main/LICENSE
