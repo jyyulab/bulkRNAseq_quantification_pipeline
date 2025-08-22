@@ -1,5 +1,5 @@
 ---
-title: Best practive
+title: Best practice
 layout: default
 nav_order: 6
 permalink: /docs/best_practice
