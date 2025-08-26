@@ -1,80 +1,15 @@
 ---
-title: Reference Preparation
+title: II-Reference Preparation
 layout: default
 nav_order: 2
 parent: Pipeline Setup
 ---
 
-### Before you start
-
-There are two parts to set up this pipeline:
-
-- **Software installation**: to install all tools required by this pipeline.
-- **Reference preparation**: to generate reference files used in this pipeline.
-
-For Yu Lab members, we have set this pipeline up on HPC:
-
-- All the tools have been compiled in one conda environment, which can be launched by:
-
-  ``` bash
-  module load conda3/202402
-  conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
-  ```
-
-- We have generated the files for four reference genomes: hg38, hg19, mm39 and mm10.
-
-
-  | Genome            | GENCODE release | Release date | Ensembl release | Path                                                         |
-  | ----------------- | --------------- | ------------ | --------------- | ------------------------------------------------------------ |
-  | hg38 (GRCh38.p14) | v48             | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48 |
-  | hg19 (GRCh37.p13) | v48lift37*      | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release48 |
-  | mm39 (GRCm39)     | vM37            | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm39/gencode.releaseM37 |
-  | mm10 (GRCm38.p6)  | vM25            | 04.2020**    | v100            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM25 |
-
-  *: The updates for the hg19/GRCh37 genome assembly have stopped in 2013. However, gene annotation continue to be updated by mapping the comprehensive gene annotations originally created for the GRCh38/hg38 reference chromosomes onto GRCh37 primary assembly using [gencode-backmap](https://github.com/diekhans/gencode-backmap) .
-
-  **: The updates for the mm10/GRCm38 genome assembly and gene annotation have stopped in 2019.
-
-You should run this tutorial only when you want to set up this pipeline locally or complie other reference genome / gene annotation.
-
-### Part I: Software installation
-
-We selcted the tools for this pipeline mainly based on two considerations: 1) they are well-established and widely-used; 2) they can work together with each other. We finally managed to complie all tools in one single conda environment. To install them:
-
-1. Install **conda** if it's not available yet. This can be done by following this [tutorial](https://www.anaconda.com/docs/getting-started/getting-started).
-
-2. Create a conda env for this pipeline:
-
-   ``` shell
-   conda create --prefix /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025 python=3.9 r-base=4.4
-   ```
-
-3. Install key software and dependencies:
-
-   ``` shell
-   ## activate the conda env
-   conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
-   
-   ## install tools from bioconda channel
-   conda install -c bioconda rseqc=5.0.4 fastp=1.0.1 biobambam=2.0.185 samtools=1.22.1 fastqc=0.12.1 bedtools=2.31.1 bowtie2=2.5.4 rsem=1.3.3 star=2.7.11b salmon=1.10.3 cutadapt=5.1 htseq=2.0.9 ucsc-genepredtobed=482 ucsc-gtftogenepred=482
-   
-   ## install dependencies from conda-forge
-   conda install -c conda-forge pandoc=3.7.0.2
-   
-   ## install R packages from r channel
-   conda install -c r r-rmarkdown=2.29 r-ggplot2=3.5.2 r-dplyr=1.1.4 r-envstats=3.1.0 r-kableextra=1.4.0 r-rjson=0.2.23 r-cowplot=1.2.0
-   
-   ## deactivate conda env
-   conda deactivate
-   ```
-
-
-
 ### Part II: Reference preparation
 
 In addition to the tools, you will also need to prepare **reference genomes** for alignment, quantification and QC assessment. Below is a summary of reference preparation (use hg38 as an example):
 
-![Picture](/Users/qpan/Documents/Pipelines/bulkRNAseq_quantification_pipeline/docs/figures/referencePreparation.png)
+![Picture](docs/figures/referencePreparation.png)
 
 #### 1. Data collection
 
