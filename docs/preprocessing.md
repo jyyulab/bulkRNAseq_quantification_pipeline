@@ -1,7 +1,7 @@
 ---
 title: Data Preprocessing
 layout: default
-nav_order: 2
+nav_order: 3
 ---
 
 **Why is preprocessing required?** The RNA-Seq data you start with could **vary in format** (e.g., FASTQ, BAM, FASTA) and usually **contain noisy sequences** (e.g., adapters leftovers, poor quality bases and other contaminations). So, we need to pre-process these data to generate the standard-in-format, clean-in-sequence FASTQ files which can be directly proceed to quantification analysis.
