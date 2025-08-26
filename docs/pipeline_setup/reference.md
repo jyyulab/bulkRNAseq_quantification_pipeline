@@ -9,7 +9,7 @@ parent: Pipeline Setup
 
 In addition to the tools, you will also need to prepare **reference genomes** for alignment, quantification and QC assessment. Below is a summary of reference preparation (use hg38 as an example):
 
-![Picture](docs/figures/referencePreparation.png)
+![Picture](referencePreparation.png)
 
 #### 1. Data collection
 
