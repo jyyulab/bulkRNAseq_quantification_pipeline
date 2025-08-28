@@ -2,10 +2,6 @@
 
 ## Overview
 
-This pipeline is developed to quantify the abundance of genes and transcripts from bulk RNA-seq data. It contains three sections:
-
-- Prepprocessing: 
-
 ![Picture](./docs/figures/overview.png)
 
 This pipeline is designed to accurately quantify gene and transcript abundance from bulk RNA-seq data. By integrating both alignment-free and alignment-based methods, it enables cross-validation to ensure robust and reliable quantification results.
