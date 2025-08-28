@@ -4,7 +4,7 @@
 
 ![Picture](./docs/figures/overview.png)
 
-This pipeline is designed to accurately quantify gene and transcript abundance from bulk RNA-seq data. By integrating both alignment-free and alignment-based methods, it enables cross-validation to ensure robust and reliable quantification results.
+This pipeline is designed to **accurately quantify gene and transcript abundance from bulk RNA-seq data**. By integrating both **alignment-free** and **alignment-based** methods, it enables cross-validation to ensure robust and reliable quantification results.
 
 As illustrated above, the pipeline consists of three stages:
 
