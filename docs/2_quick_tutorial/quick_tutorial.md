@@ -2,7 +2,7 @@
 title: Quick Tutorial
 layout: default
 nav_order: 3
-permalink: /docs/_2_quick_tutorial/quick_tutorial
+permalink: /docs/2_quick_tutorial/quick_tutorial
 ---
 
 ### A quick tutorial to run this pipeline

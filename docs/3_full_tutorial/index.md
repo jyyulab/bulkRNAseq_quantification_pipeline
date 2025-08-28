@@ -2,7 +2,7 @@
 title: Full Tutorial
 layout: default
 nav_order: 4
-permalink: /docs/_3_full_tutorial/index
+permalink: /docs/3_full_tutorial/index
 ---
 
 ### Step-by-Step Tutorial

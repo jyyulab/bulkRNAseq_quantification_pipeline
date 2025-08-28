@@ -1,7 +1,7 @@
 ---
 title: About
 nav_order: 5
-permalink: /docs/_4_about/about
+permalink: /docs/4_about/about
 ---
 
 ### ABOUT
