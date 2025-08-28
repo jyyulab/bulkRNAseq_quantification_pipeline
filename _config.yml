@@ -1,9 +1,9 @@
 title: Bulk RNA-seq quantification
 description: A tutorial for the quantification analysis from bulk RNA-seq data
 theme: just-the-docs
-#remote_theme: pmarsceill/just-the-docs
-color_scheme: nil
+
 search_enabled: true
+
 url: https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/
 
 aux_links:
