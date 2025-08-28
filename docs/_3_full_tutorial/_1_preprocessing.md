@@ -1,10 +1,35 @@
 ---
-title: Data Preprocessing
+title: Preprocessing
 layout: default
-nav_order: 3
+nav_order: 1
+parent: Full Tutorial
 ---
 
-**Why is preprocessing required?** The RNA-Seq data you start with could **vary in format** (e.g., FASTQ, BAM, FASTA) and usually **contain noisy sequences** (e.g., adapters leftovers, poor quality bases and other contaminations). So, we need to pre-process these data to generate the standard-in-format, clean-in-sequence FASTQ files which can be directly proceed to quantification analysis.
+### Why is preprocessing required?
+
+---
+
+There are two main reasons:
+
+1. The RNA-Seq data you start with could **vary in format** (e.g., FASTQ, BAM, FASTA) and usually **contain noisy sequences** (e.g., adapters leftovers, poor quality bases and other contaminations). So, we need to pre-process these data to <u>generate the standard-in-format, clean-in-sequence FASTQ files which can be directly proceed to quantification analysis</u>.
+2. You will need to <u>figure out some information of your input data that will be used to speciry the arguments in quantification analysis</u>, like the species of your samples, library type (single-end or paired-end, stranded or un-stranded), Phred score encoding methods (+33 or +64), etc.
+
+
+
+In this pipeline, we provide 6 samples as examples to show 1) the input formats it can handle; and 2) key information required for down-stream quantification analysis:
+
+| sampleID | libraryType | phredMethod | reference | input                                                        | output                                                       |
+| -------- | ----------- | ----------- | --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Sample1  | PE          | Phred33     | hg38      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample1/fqRaw_R1.fq.gz;/research_jude/rgs01_jude/gro    ups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample1/fqRaw_R2.fq.gz | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample2/fqRaw.fq.gz>/research_jude/rgs01_jude/groups    /yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/Quantification |
+| Sample2  | SE          | Phred33     | hg38      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample2/fqRaw.fq.gz | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample2/fqRaw.fq.gz>/research_jude/rgs01_jude/groups    /yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/Quantification |
+| Sample3  | PE          | Phred33     | hg38      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample3/fqRaw_R1_L001.fq.gz,/research_jude/rgs01_jud    e/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample3/fqRaw_R1_L002.fq.gz,/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_en    v/bulkRNAseq_2025/git_repo/testdata/sample3/fqRaw_R1_L003.fq.gz,/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample3/fqRaw_R1    _L004.fq.gz;/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample3/fqRaw_R2_L001.fq.gz,/research_jude/rgs01_jude/groups/yu3grp/    projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample3/fqRaw_R2_L002.fq.gz,/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_202    5/git_repo/testdata/sample3/fqRaw_R2_L003.fq.gz,/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample3/fqRaw_R2_L004.fq.gz | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample2/fqRaw.fq.gz>/research_jude/rgs01_jude/groups    /yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/Quantification |
+| Sample4  | SE          | Phred33     | hg38      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample4/fqRaw_L001.fq.gz,/research_jude/rgs01_jude/g    roups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample4/fqRaw_L002.fq.gz,/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulk    RNAseq_2025/git_repo/testdata/sample4/fqRaw_L003.fq.gz,/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample4/fqRaw_L004.fq.gz | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample2/fqRaw.fq.gz>/research_jude/rgs01_jude/groups    /yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/Quantification |
+| Sample5  | PE          | Phred33     | hg38      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample5/rawBAM.toGenome.bam | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample2/fqRaw.fq.gz>/research_jude/rgs01_jude/groups    /yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/Quantification |
+| Sample6  | SE          | Phred33     | mm10      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample6/rawBAM.toTranscriptome.bam | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sample2/fqRaw.fq.gz>/research_jude/rgs01_jude/groups    /yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/Quantification |
+
+This table is also available here: /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sampleTable.testdata.txt.
+
+
 
 ### 1. Prepare raw FASTQ files
 

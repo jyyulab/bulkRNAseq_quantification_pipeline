@@ -1,9 +1,8 @@
 ---
-title: Alignment-free quantification by Salmon
+title: Salmon
 layout: default
-nav_order: 1
-permalink: /docs/quantification/alignment_free/alignment_free
-parent: Quantification
+nav_order: 2
+parent: Full Tutorial
 ---
 
 Salmon is a bulk RNA-Seq quantifier with **wicked-fast speed** and **comparable accuracy** (https://salmon.readthedocs.io/en/latest/salmon.html). It provides two working modes:

@@ -2,7 +2,7 @@
 title: Pipeline Setup
 layout: default
 nav_order: 2
-permalink: /docs/pipeline_setup/index
+permalink: /docs/_1_pipeline_setup/index
 ---
 
 ### Before you start

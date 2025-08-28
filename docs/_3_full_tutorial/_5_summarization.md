@@ -1,8 +1,8 @@
 ---
-title: Quantification summary
+title: Summarization
 layout: default
 nav_order: 5
-permalink: /docs/quant_summary
+parent: Full Tutorial
 ---
 
 
