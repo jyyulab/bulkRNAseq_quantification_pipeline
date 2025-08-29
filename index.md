@@ -55,16 +55,16 @@ The pipeline generates a comprehensive **HTML report** for each sample, detailin
 
 ## To Get Started
 
-- If you can't access to the conda environment below, or you need reference genome assembly other than hg38, hg19, mm39, mm10, you would need to set up your pipeline first. Then please refer to this tutorial: [Pipeline Setup](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/index).
+- If you are unable to access the conda environment below, or if you need a reference genome assembly other than the pre-built ones (**hg38**, **hg19**, **mm39**, **mm10**), you will need to set up your own pipeline first. For detailed instructions, please refer to this tutorial: [Pipeline Setup](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/index).
 
   ```bash
   module load conda3/202402
   conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
   ```
 
-- If you are new to bulk RNA-seq quantification analysis, and want to learn more details about the pipeline, please refer to this tutorial: [Full Tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/3_full_tutorial/index).
+- If you are new to bulk RNA-seq quantification analysis and would like to learn more about the pipeline in detail, please refer to this tutorial: [Full Tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/3_full_tutorial/index).
 
-- If you wann run this pipeline directly with your samples, please refer to this tutorial: [Quick Tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/2_quick_tutorial/quick_tutorial).
+- If you want to run this pipeline directly with your ownsamples, please refer to this tutorial: [Quick Tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/2_quick_tutorial/quick_tutorial).
 
  
 
