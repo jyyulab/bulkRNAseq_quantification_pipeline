@@ -30,7 +30,7 @@ We selcted the tools for this pipeline mainly based on two considerations: 1) th
    conda install -c conda-forge pandoc=3.7.0.2
    
    ## install R packages from r channel
-   conda install -c r r-rmarkdown=2.29 r-ggplot2=3.5.2 r-dplyr=1.1.4 r-envstats=3.1.0 r-kableextra=1.4.0 r-rjson=0.2.23 r-cowplot=1.2.0
+   conda install -c r r-rmarkdown=2.29 r-ggplot2=3.5.2 r-dplyr=1.1.4 r-envstats=3.1.0 r-kableextra=1.4.0 r-rjson=0.2.23 r-cowplot=1.2.0 r-plotly=4.11.0
    
    ## deactivate conda env
    conda deactivate
