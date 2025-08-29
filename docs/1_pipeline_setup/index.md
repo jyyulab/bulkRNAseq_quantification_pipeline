@@ -40,9 +40,9 @@ In addition, we have pre-built databases for the four most commonly used referen
 | mm39/GRCm39     | vM37            | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm39/gencode.releaseM37 |
 | mm10/GRCm38.p6  | vM25            | 04.2020**    | v100            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM25 |
 
-<caption>*: Updates for the hg19/GRCh37 genome assembly ceased in 2013. However, gene annotations continue to be maintained by mapping the comprehensive gene annotations originally created for the GRCh38/hg38 reference chromosomes onto GRCh37 primary assembly using [gencode-backmap](https://github.com/diekhans/gencode-backmap).
+<sup>*: Updates for the hg19/GRCh37 genome assembly ceased in 2013. However, gene annotations continue to be maintained by mapping the comprehensive gene annotations originally created for the GRCh38/hg38 reference chromosomes onto GRCh37 primary assembly using [gencode-backmap](https://github.com/diekhans/gencode-backmap).
 
-**: Updates for both the mm10/GRCm38 genome assembly and its gene annotations ended in 2019.</caption>
+**: Updates for both the mm10/GRCm38 genome assembly and its gene annotations ended in 2019.</sup>
 
 
 
