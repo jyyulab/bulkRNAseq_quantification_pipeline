@@ -11,10 +11,10 @@ This pipeline is designed to quantify the abandances of genes and transcripts fr
 
 
 
-#### Contact
+### Contact
 If you need support or have any questions about using this pipeline, please visit the [FAQ](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/4_FAQ/FAQ) or contact us directly at Qingfei.Pan@stjude.org.
 
 
 
-#### License
+### License
 MIT License
