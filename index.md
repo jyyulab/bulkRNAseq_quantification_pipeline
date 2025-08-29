@@ -5,64 +5,66 @@ nav_order: 1
 permalink: /index
 ---
 
-### Scope of this pipeline
+# Bulk RNA-seq Quantification Pipeline 2025
 
----
+## Overview
 
-Bulk RNA sequencing (RNA-Seq) is a highly sensitive and accurate tool for meansuring expression across the transcriptome. In addition to the transcriptome quantification, RNA-Seq also allows researchers to detect new splicing junctions (e.g. TOPHAP/TOPHAP2-regtools), novel transcripts (e.g. Cufflinks), gene fusion (e.g. STAR-Fusion, Arriba), single nucleotide variants (e.g. STAR-GATK), and other features. **<u>This pipeline is for transcriptome quantification purpose only</u>.**
+![Picture](./docs/figures/overview.png)
 
-### The core question
+This pipeline is designed to **accurately quantify gene and transcript abundance from bulk RNA-seq data**. By integrating both **alignment-free** and **alignment-based** methods, it enables **cross-validation** to ensure robust and reliable quantification results.
 
----
+As illustrated above, the pipeline consists of three stages:
 
-**How can we ensure the accuracy of bulk RNA-seq quantification?** In this pipeline, we address this by **applying multiple quantification methods for cross-validation**, thereby increasing the reliability of the results.
+#### 1. Preprocessing ####
 
-The current bulk RNA-Seq quantification methods can be grouped into two categories, **alignment-based** and **alignment-free**, as summarized in the table below. 
+The pipeline accepts raw input files in variable formats (e.g., FASTQ, BAM/SAM) and processes them to generate **standard-in-format**, **clean-in-sequence** FASTQ files. These cleaned files are optimized for downstream quantification analysis.
 
-|            | Alignment-based methods                                      | Alignment-free methods                                       |
-| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Definition | Methods that quanfity from the **alignments to either transcritpome or genome** (i.e. BAM/SAM files). The coordinates of mapped reads are provided. | Methdos that quantify from **read-transcript matches**. The coordinates of mapped reads are **NOT** provided. |
-| Principle  | "Seed and extend" for aligners.<br />Quantifiers vary in rules and weighting methods to count reads. | "*k-mer*s" based indexing;<br />Multiple models to identify read-transcript matches,<br /> e.g. SEMEs for  Salmon, T-DBG for Kallisto |
-| Examples   | **Aligner**: Bowtie/Bowtie2, STAR, BWA, HISAT2, TopHat2, et. al.<br />**Quantifier**: RSEM, HTSeq, featureCounts, IsoEM, Cufflinks et. al. | Salmon, Kallisto, Sailfish, Fleximer, RNA-Skim, RapMap, et. al. |
-| Accuracy   | High                                                         | a little bit lower or equal                                  |
-| Speed      | Slow, a few hours for a typical run                          | Super-fast, a few minutes for a type run                     |
+#### 2. Quantification
 
-In this pipeline, we provides three quantification methods covering both categories:
+In this stage, the pipeline quantifies the abundance of both genes and transcripts. It supports three well-established and widely-used quantifiers:
 
-- [**Salmon**](https://salmon.readthedocs.io/en/latest/salmon.html): one **wicked-fast** and **highly-accurate** alignment-free method which is recently further enhanced by integrating **selective alignment** and **decoy sequences**
-- [**RSEM**](https://github.com/bli25/RSEM_tutorial): the most highly cited alignment-based method which shows the highest accuracy in most benchmarks
-- [**STAR**](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf): another **alignment-based** quantifier featured by **spliced transcripts alignment. This is the tool used by [GDC mRNA quantification analysis pipeline](https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/Expression_mRNA_Pipeline)**
+- [**Salmon**](https://salmon.readthedocs.io/en/latest/salmon.html): An **alignment-free quantifier** known for its **wicked-fast speed** and **comarable accuracy**.
 
-### Overview
+- [**RSEM**](https://github.com/bli25/RSEM_tutorial): An **alignment-based quantifier** with **exceptional accuracy**. It has been used as **gold standard** in many benchmarking studies.
 
----
+- [**STAR**](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf): An **alignment-based quantifier** featured by **splice-aware alignment**. This is the tool used by [GDC mRNA quantification analysis pipeline](https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/Expression_mRNA_Pipeline).
 
-![Picture](docs/figures/overview.png)
+#### 3. Summarization
 
-#### Three stages
+The pipeline generates a comprehensive **HTML report** for each sample, detailing quantification results, alignment statistics, correlation analyses, gene body coverage visualizations, and more. For multiple samples, it produces **a unified summary report** and a master gene expression matrix, which can be directly utilized for downstream analyses such as [**NetBID**](https://github.com/jyyulab/NetBID).
 
-- **Preprocessing**: to prepare the standard inputs for quantification analysis
-- **Quantification**: to **quantify** the gene and transcript expression using both alignment-free and alignment-based methods
-- **Summarization**: to compile the **expression matrices** at both gene and transcript levels, and generate the **quanlity control report**.
 
-### Two species
 
-In this pipeline, we have pre-generated the index libraries for two species: **human** and **mouse**, as listed below. For other species, you will need to generate the index libraries by yourself following the Pipeline Setup tutorial.
+## Key features
 
-| Genome | GENCODE release | Release date | Path                                                         |
-| ------ | --------------- | ------------ | ------------------------------------------------------------ |
-| hg38   | v48             | 05.2025      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48 |
-| hg19   | v48lift37       | 05.2025      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release48 |
-| mm39   | vM37            | 05.2025      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm39/gencode.releaseM37 |
-| mm10   | vM25            | 04.2020      | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM25 |
+**Accuracy ensured by cross-validation**: This pipeline quantifies the transcriptome using both alignment-free method (Salmon) and alignment-based method (RSEM_STAR). It then performs a correlation analysis on the quantification results by these two approaches. A strong correlation (coefficient > 0.9) typically indicates high quantification accuracy.
 
-### One environment 
+**Comprehensive quality control report**: For each sample, this pipeline generates a comprehensive quantlity control report, summarizing alignment statistics, quantification correlations, gene type distributions, and gene body converage metrics, and more. These metrics are invaluable for asseesing quantification accuracy and troubleshooting potential issues.
 
-We have managed to complie all tools required in this pipeline into one single conda environment. You can easily set it up following our tutorial.
+**Flater, Simpler, Faste**r: Every step of the pipeline has been optimized for ease of use, maintenance and speed:
 
-For St Jude HPC users, it can be easily launched by:
+- All required tools now can be installed within one single conda environment.
+- Time-consuming steps, such as gene body coverage analysis, has been optimized. Now a typical run completes in about 2.5 hours.
+- There are only two arguments that the users need to specify manually. For all the rest, including the adapter sequences and strandness types, the pipeline can infer them automatically.
+- All required from the user is a sample table (see example below). This make it effortless to process hundreds or thousands of samples using this pipeline. 
 
-```bash
-module load conda3/202402
-conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
-```
+![Picture](./docs/figures/sampleTable_template.png)
+
+## To Get Started
+
+- If you can't access to the conda environment below, or you need reference genome assembly other than hg38, hg19, mm39, mm10, you would need to set up your pipeline first. Then please refer to this tutorial: [Pipeline Setup](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/index).
+
+  ```bash
+  module load conda3/202402
+  conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
+  ```
+
+- If you are new to bulk RNA-seq quantification analysis, and want to learn more details about the pipeline, please refer to this tutorial: [Full Tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/3_full_tutorial/index).
+
+- If you wann run this pipeline directly with your samples, please refer to this tutorial: [Quick Tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/2_quick_tutorial/quick_tutorial).
+
+ 
+
+## Contact
+
+If you need support or have any questions about using this pipeline, please visit the [FAQ](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/4_FAQ/FAQ) or contact us directly at Qingfei.Pan@stjude.org.
