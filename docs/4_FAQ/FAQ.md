@@ -1,5 +1,6 @@
 ---
 title: FAQ
+layout: default
 nav_order: 5
 permalink: /docs/4_FAQ/FAQ
 ---

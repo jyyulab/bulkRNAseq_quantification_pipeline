@@ -1,5 +1,6 @@
 ---
 title: About
+layout: default
 nav_order: 6
 permalink: /docs/5_about/about
 ---
