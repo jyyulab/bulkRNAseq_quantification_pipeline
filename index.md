@@ -44,11 +44,14 @@ The pipeline generates a comprehensive **HTML report** for each sample, detailin
 **Flater, Simpler, Faste**r: Every step of the pipeline has been optimized for ease of use, maintenance and speed:
 
 - All required tools now can be installed within one single conda environment.
+
 - Time-consuming steps, such as gene body coverage analysis, has been optimized. Now a typical run completes in about 2.5 hours.
+
 - There are only two arguments that the users need to specify manually. For all the rest, including the adapter sequences and strandness types, the pipeline can infer them automatically.
+
 - All required from the user is a sample table (see example below). This make it effortless to process hundreds or thousands of samples using this pipeline. 
 
-![Picture](./docs/figures/sampleTable_template.png)
+  ![Picture](./docs/figures/sampleTable_template.png)
 
 ## To Get Started
 
