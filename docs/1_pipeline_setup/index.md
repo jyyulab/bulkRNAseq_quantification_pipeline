@@ -13,8 +13,6 @@ The setup of this pipeline consists of two main sections:
 
    Now the computational environment for this pipeline is managed within a single conda environment. In this section, you will **create a conda enviroment**   for this pipeline, **install all required tools and dependencies**, and **deposite the scripts of this pipeline** to the appropriate directory. For step-by-step instructions, please refer to: **[Software Installation](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/1_software.html)**.
 
-   
-
 2. **Database Preparation**
 
    In addition to software, the pipeline requires various reference files for alignment, quantification, and quality control. These files include indexed genome files, gene body bin lists, gene/transcript annotation files, and more. In this pipeline, we organize these files in a **per reference genome assembly, per folder** manner: each reference genome assembly has its own folder containing all required files for every tool and analysis. For detailed guidance, please see: **[Database Preparation](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/2_database.html)**.
@@ -41,8 +39,6 @@ In addition, we have pre-built databases for the four most commonly used referen
 | mm10/GRCm38.p6  | vM25            | 04.2020**    | v100            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM25 |
 
 <sup>**\***: Updates for the hg19/GRCh37 genome assembly ceased in 2013. However, gene annotations continue to be maintained by mapping the comprehensive gene annotations originally created for the GRCh38/hg38 reference chromosomes onto GRCh37 primary assembly using [gencode-backmap](https://github.com/diekhans/gencode-backmap).<br>**\*\***: Updates for both the mm10/GRCm38 genome assembly and its gene annotations ended in 2019.</sup>
-
-
 
 You should set up your own pipeline **only when**:
 

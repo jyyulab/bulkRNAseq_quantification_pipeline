@@ -1,11 +1,11 @@
 ---
-title: II-Reference Preparation
+title: II-Database Preparation
 layout: default
 nav_order: 2
 parent: Pipeline Setup
 ---
 
-### Part II: Reference preparation
+## Part II: Reference Preparation
 
 In addition to the tools, you will also need to prepare **reference genomes** for alignment, quantification and QC assessment. Below is a summary of reference preparation (use hg38 as an example):
 
