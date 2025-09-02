@@ -5,39 +5,45 @@ nav_order: 2
 parent: Pipeline Setup
 ---
 
-## Part II: Reference Preparation
+## Part II: Database Preparation
 
-In addition to the tools, you will also need to prepare **reference genomes** for alignment, quantification and QC assessment. Below is a summary of reference preparation (use hg38 as an example):
+In addition to the tools and dependencies, you will also need to prepare **databases for reference genomes** which will be used in alignment, quantification and QC assessment.
 
-![Picture](referencePreparation.png)
+In this pipeline, we manage the databases in **one database per reference genome** manner. Below is an overview of database preparation (use hg38 as an example):
 
-#### 1. Data collection
+![Picture](../figures/referencePreparation.png)
 
-The reference preparation stars with FOUR files that can be  directly downloaded from websites:
+1. **Data collection**
 
-- **Gene Annotation file in [GTF](https://biocorecrg.github.io/PhD_course_genomics_format_2021/gtf_format.html) (Gene Transfer Format) format**: e.g., /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48/gencode.v48.primary_assembly.annotation.gtf
+   There are **FOUR** files required in dataset preparation, and three of them can be  directly downloaded from websites:
 
-- **Genome sequence file in [FASTA](https://www.ncbi.nlm.nih.gov/genbank/fastaformat/) format**: e.g., /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48/GRCh38.primary_assembly.genome.fa
+   - **<u>*annotation.gtf*</u>**: **Gene Annotation file in [GTF](https://biocorecrg.github.io/PhD_course_genomics_format_2021/gtf_format.html) (Gene Transfer Format) format**
 
-- **Transcriptome sequence file in [FASTA](https://www.ncbi.nlm.nih.gov/genbank/fastaformat/) format**: e.g., `/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48/gencode.v48.transcripts.fa`.
 
-  ***<u>NOTE:</u>*** For the three files above, they are usually available at open-sourced websites. For human and mouse, we recommend [GENCODE](https://www.gencodegenes.org/) to collect them, while for other species, we recommend [Ensembl](https://useast.ensembl.org/info/data/ftp/index.html). 
+   - ***<u>transcriptome.fa</u>***: **Transcriptome sequence file in [FASTA](https://www.ncbi.nlm.nih.gov/genbank/fastaformat/) format**
 
-- **HouseKeeping gene list**: the housekeeping genes defined by [this study](https://www.sciencedirect.com/science/article/pii/S0168952513000899?via%3Dihub) (N = 3804), e.g., /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48/housekeeping_genes.human.txt.
+   - ***<u>genome.fa</u>***: **Genome sequence file in [FASTA](https://www.ncbi.nlm.nih.gov/genbank/fastaformat/) format**
 
-  ***<u>NOTE:</u>*** For other species, you can generate the housekeeping gene list by gene homology conversion using BiomaRt or other tools. Below is the codes I used to generate the housekeeping genes in mouse:
+     ***<u>NOTE:</u>*** For human and mouse, we recommend [GENCODE](https://www.gencodegenes.org/) to download them, while for other species, we recommend [Ensembl](https://useast.ensembl.org/info/data/ftp/index.html). 
 
-  ``` R
-  library(NetBID2)
-  
-  HK_hg <- read.table("/Volumes/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48/housekeeping_genes.human.txt")
-  HK_mm <- get_IDtransfer_betweenSpecies(
-    from_spe = "human", to_spe = "mouse", from_type = "hgnc_symbol", to_type = "mgi_symbol",
-    use_genes = unique(HK_hg$V1));
-  colnames(HK_mm) <- paste0("#", colnames(HK_mm))
-  write.table(HK_mm[,c(2,1)], ## Please make sure the mouse gene symbols are in the FIRST column
-              file = "/Volumes/projects/software_JY/yu3grp/yulab_databases/references/mm39/gencode.releaseM37/housekeeping_genes.mouse.txt", col.names = T, row.names = F, sep = "\t", quote = F)
-  ```
+   - ***<u>HouseKeeping gene list</u>***: the housekeeping genes defined by [this study](https://www.sciencedirect.com/science/article/pii/S0168952513000899?via%3Dihub) (N = 3804).
+
+     
+
+     ***<u>NOTE:</u>*** For human, the housekeeping genes can be downloaded here: For other species, you can generate the housekeeping gene list by gene homology conversion using BiomaRt or other tools. Below is the codes I used to generate the housekeeping genes in mouse:
+     
+     ``` R
+     library(NetBID2)
+     
+     HK_hg <- read.table("housekeepingGenes_human.txt")
+     HK_mm <- get_IDtransfer_betweenSpecies(
+       from_spe = "human", to_spe = "mouse", from_type = "hgnc_symbol", to_type = "mgi_symbol",
+       use_genes = unique(HK_hg$V1));
+     colnames(HK_mm) <- paste0("#", colnames(HK_mm))
+     write.table(HK_mm[,c(2,1)], ## Please make sure the mouse gene symbols are in the FIRST column
+                 file = "housekeepingGenes_mouse.txt", col.names = T, row.names = F, sep = "\t", quote = F)
+     ```
+
 
 
 

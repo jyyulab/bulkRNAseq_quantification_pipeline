@@ -15,13 +15,11 @@ As mentioned before, we have manged to install and maintain all required tools a
    module load conda/202402 # version 24.1.2
    ```
 
-   NOTE: Though we always encourage the users to create the conda environment and install the required tools and dependencies manually following #2 and #3 blow, we do provide the `environment.yml` file (available here) so that the users can check the tools and dependencies directly and create the conda environment easily by: 
+   NOTE: Though **we always encourage the users to create the conda environment and install the required tools and dependencies manually following #2 and #3 blow**, we do provide the **`environment.yml`** file (available [here](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/scripts/environment.yml)) so that the users can directly check the tools and dependencies and easily create the conda environment using: 
 
    ``` bash
    conda env create -f environment.yml -n bulkRNAseq_2025 -p /your-own-path/bulkRNAseq_2025
    ```
-
-   
 
 2. Create a conda environment for this pipeline:
 
@@ -51,9 +49,24 @@ As mentioned before, we have manged to install and maintain all required tools a
    conda deactivate
    ```
 
-4. Diposite the scripts to the right folder
+4. Deposite the scripts
+
+   Thearetically, the scripts of this pipeline can be saved in any path that you can access. However, we HIGHLY recommend the users to deposite them in this path: `/your-conda-env-path/pipeline/scripts`. In the showcase, it's `/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts`.
+
+   These scripts, by their applications, can be divided into three groups:
+
+   - `/scripts/run/*.pl`: These scripts are used to run the pipeline step-by-step.
+   - `/scripts/setup/*.pl`: These scripts are used in pipeline setup.
+   - `/scripts/qc/*.Rmd`: These scripts are used to generate the quality control reports.
 
    ``` bash
+   ## All scripts are available here: https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/tree/main/scripts.
+   
+   ## To download them:
+   ## 1) visit: https://download-directory.github.io/
+   ## 2) paste this link: https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/tree/main/scripts
+   ## 3) press Enter
+   ## 4) unzip the downloaded file and save them to your folder
    ```
 
    
