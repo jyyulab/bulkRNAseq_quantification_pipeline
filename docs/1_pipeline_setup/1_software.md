@@ -15,6 +15,14 @@ As mentioned before, we have manged to install and maintain all required tools a
    module load conda/202402 # version 24.1.2
    ```
 
+   NOTE: Though we always encourage the users to create the conda environment and install the required tools and dependencies manually following #2 and #3 blow, we do provide the `environment.yml` file (available here) so that the users can check the tools and dependencies directly and create the conda environment easily by: 
+
+   ``` bash
+   conda env create -f environment.yml -n bulkRNAseq_2025 -p /your-own-path/bulkRNAseq_2025
+   ```
+
+   
+
 2. Create a conda environment for this pipeline:
 
    ``` shell
