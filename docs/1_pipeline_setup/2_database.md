@@ -13,6 +13,13 @@ For this pipeline, each reference genome assembly has its own dedicated database
 
 ![Picture](../figures/database_preparation.png)
 
+Below, we will use the hg38 as a example to go through this process step-by-step. To start, locate yourself to the folder of your conda enviorment:
+
+``` bash
+# locate to your conda env, change the path accordingly
+cd /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
+```
+
 1. **Data collection**
 
    There are **FOUR** files required for database preparation. Three of them can be directly downloaded from online resources:
@@ -24,9 +31,6 @@ For this pipeline, each reference genome assembly has its own dedicated database
    - ***<u>genome.fa</u>***: Genome sequence file in [FASTA](https://www.ncbi.nlm.nih.gov/genbank/fastaformat/) format
 
      ```bash
-     # locate to your conda env, change the path accordingly
-     cd /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
-     
      # create and change to the database folder
      mkdir -p pipeline/databases/hg38/gencode.release48 # for annotation release 48 for hg38
      cd pipeline/databases/hg38/gencode.release48
@@ -71,7 +75,7 @@ For this pipeline, each reference genome assembly has its own dedicated database
    - **`annotation.gene2transcript.txt`** & **`annotation.transcript2gene.txt`**: These files provide mappings between transcripts and genes, which are necessary for gene-level quantification.
    - **`annotation.geneAnnotation.txt`** & **`annotation.transcriptAnnotation.txt`**: These files contain detailed annotations for genes and transcripts, and are used in generating the final gene expression matrix.
 
-   To simplify this process, we have provided a script, **`parseAnnotation.pl`**, which allows you to easily generate all four filest:
+   To simplify this process, we have provided a script, [**`parseAnnotation.pl`**](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/scripts/setup/parseAnnotation.pl), which allows you to easily generate all four filest:
 
    ``` bash
    ## parse the gene anotation file
@@ -82,28 +86,28 @@ For this pipeline, each reference genome assembly has its own dedicated database
 
 3. **Creating gene body bins**
 
-   In this step, we will create a bin list for the longest transcript of each gene, with 100 bins per transcript by default. This list is required in genebody coverage statistics - **an important QC metrics that indicates the extent of RNA degradation**.
+   In this step, we will create a bin list for the longest transcript of each gene, with 100 bins per transcript by default. This list is required for gene body coverage analysis - **a key quality control metric that indicates the extent of RNA degradation**.
 
    
 
    Two files will be generated:
 
-   - ***<u>./bulkRNAseq/genebodyBins/genebodyBins_all.txt</u>***: bins of the longest transcripts of ***all genes***. This one is the most reliable solution since it calculates the gene body coverage across all genes (N = 46,402 for human). However, it's much slower.
+   - ***<u>./bulkRNAseq/genebodyBins/genebodyBins_all.txt</u>***: This file contains bins of the longest transcripts of ***all genes*** (N = 46,402 for human). This approach provides the most comprehensive gene body coverage assessment but is computationally slower.
 
-   - ***<u>./bulkRNAseq/genebodyBins/genebodyBins_housekeeping.txt</u>***: bins of the longest transcripts of ***precurated housekeeping genes***. Though it only considers the housekeeping genes (N = 3,515 in human), based on our tests across 30+ datasets, no significant difference of gene coverate statistics was observed compared to the all-transcript version. And it's way faster. This is widely-used in many pipelines, including the [RseQC](https://rseqc.sourceforge.net/#genebody-coverage-py). ***<u>So, we set it as the default in this pipeline</u>***.
+   - ***<u>./bulkRNAseq/genebodyBins/genebodyBins_housekeeping.txt</u>***: It contains bins of the longest transcripts of ***pre-curated housekeeping genes*** (N = 3,515 for human). Based on our tests across 30+ datasets, gene body coverage statistics from this file are comparable to those from the all-genes version, but it is significantly faster. This method is widely used in many pipelines, including the [RseQC](https://rseqc.sourceforge.net/#genebody-coverage-py). ***<u>Therefore, we set this as the default option in our pipeline</u>***.
 
-   You can easily generate these two files with the command below:
+   We have also provided a script, [**`createBins.pl`**](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/scripts/setup/createBins.pl), to generate these two files:
 
    ``` bash
    ## create the gene body bins
    ## This command will generate the two files containing the bin list of the longest transcript of all genes and housekeeping genes.
-   ## Three arguments are needed: transcriptome sequence file in FASTA format, a txt file containiing housekeeping genes in the first column, and a directory to save the output files.
+   ## Three arguments are needed: 1) transcriptome sequence file in FASTA format; 2) a txt file containiing housekeeping genes in the first column; and 3) a directory to save the output files.
    perl /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/setup/createBins.pl transcripts.fa housekeepingGenes_human.txt ./bulkRNAseq/genebodyBins
    ```
 
 4. **Create genome index files for RSEM**
 
-   The command below to build references is from [RSEM's tutorial](https://github.com/bli25/RSEM_tutorial?tab=readme-ov-file#-build-references):
+   The following command for building references is adapted from [RSEM's tutorial](https://github.com/bli25/RSEM_tutorial?tab=readme-ov-file#-build-references):
 
    ``` bash
    #BSUB -P buildIndex
@@ -137,7 +141,7 @@ For this pipeline, each reference genome assembly has its own dedicated database
 
 5. **Create genome index files for Salmon**
 
-   The command below to build references is from [this tutorial](https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/):
+   The command below to build references for Salmon is from [this tutorial](https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/):
 
    ``` bash
    #BSUB -P salmonIndex
@@ -165,7 +169,7 @@ For this pipeline, each reference genome assembly has its own dedicated database
 
 6. **Create genome index files for STAR**
 
-   The command below to build references is from [this tutorial](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf#page=5.42):
+   The command below to build references for STAR is from [its manual](https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/STARmanual.pdf#page=5.42):
 
    ``` bash
    #BSUB -P STAR_Index
