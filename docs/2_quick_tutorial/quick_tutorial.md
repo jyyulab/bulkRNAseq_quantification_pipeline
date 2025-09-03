@@ -22,15 +22,17 @@ If you are using a different conda environment, please change the path according
 
 ## I. Prepare the sample table
 
-Below is an example of the sample table for this pipeline:
+The **sample table** is a table summarizing the essential information for all input samples required for quantification analysis.  **It serves as the central input file for the pipeline: every step of this pipeline is performed based on the entries in this table.** Whether you have a single sample or thousands, you can list them all in this table. **This is the only input file required to run this pipeline.**
+
+ Below is an example of the sample table for this pipeline:
 
 ![image](../figures/sampleTable_template.png)
 
   It is a **tab-delimited text file with 6 columns**:
 
 1) **<u>sampleID</u>**: name of samples. Some rules apply:
-   - Should contain **letters**, **numbers** or **underscores** only;
-   - Should NOT **start with numbers**.
+   - Should contain **letters**, **numbers** or **underscores ONLY**;
+   - Should **NOT start with numbers**.
 
 2. **<u>libraryType</u>**: type of libraries, paired-end or single-end, **`[PE | SE]`**. 
 
@@ -67,27 +69,27 @@ Below is an example of the sample table for this pipeline:
      # "Sanger / Illumina 1.9" indicates Phred33, while "Illumina 1.5 or lower" indicates Phred64.
      ```
 
-4. **<u>reference</u>**: path to reference genome database folder. There are pre-built datasets for four reference genome assemblies:
+4. **<u>reference</u>**: path to reference genome database folder. This pipeline contains four pre-built databases:
 
-   | Genome Assembly | Path                                                         |
-   | --------------- | ------------------------------------------------------------ |
-   | hg38/GRCh38.p14 | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/hg38/gencode.release48 |
-   | hg19/GRCh37.p13 | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/hg19/gencode.release48lift37 |
-   | mm39/GRCm39     | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/mm39/gencode.releaseM37 |
-   | mm10/GRCm38.p6  | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/mm10/gencode.releaseM25 |
+   | Genome Assembly     | Path                                                         |
+   | ------------------- | ------------------------------------------------------------ |
+   | **hg38**/GRCh38.p14 | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/hg38/gencode.release48 |
+   | **hg19**/GRCh37.p13 | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/hg19/gencode.release48lift37 |
+   | **mm39**/GRCm39     | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/mm39/gencode.releaseM37 |
+   | **mm10**/GRCm38.p6  | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/mm10/gencode.releaseM25 |
 
    If you are using a different conda environment, please change the paths accordingly. To set up a reference genome database, please refer to the [Database Preparation](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/2_database.html) tutorial.
 
-   - We recommend to use **`hg38`** for human samples, and **`mm39`** for mouse samples. The other assemblies, **`hg19`** and **`mm10`**, are mainly used to match some legacy data.
-   - If you can't acccess to the paths listed above, or if you require other genome assemblies, you will need to manually create the reference files by following the [Database Preparation](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/2_database.html) tutorial.
+   - We recommend using **`hg38`** for human samples and **`mm39`** for mouse samples. The other assemblies, **`hg19`** and **`mm10`**, are primarily intended for compatibility with legacy data.
+   - If you cannot acccess to the paths listed above, or if you require other genome assemblies, you will need to manually create the reference files by following the [Database Preparation](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/2_database.html) tutorial.
 
 5. **<u>input</u>**: input files for quantification. This pipeline accepts the following formats:
 
-   - **<u>Standard FASTQ files</u>**: both paired-end (e.g., sample1) and single-end (e.g., sample2). Filenames must be ended with **`.fq`**, **`.fastq`**, **`.fq.gz`** or **`.fastq.gz`**.
+   - **<u>Standard FASTQ files</u>**: both paired-end (e.g., sample1) and single-end (e.g., sample2). Filenames must be ended with **`.fq`**, **`.fastq`**, **`.fq.gz`** or **`.fastq.gz`**. For paired-end samples, **mate1** and **mate2** should be catenated by **<u>*; (semicolon)*</u>**.
 
-   - **<u>FASTQ files of multple lanes</u>**: both paired-end (e.g., sample3) and single-end (e.g., sample4). Filenames must be ended with **`.bam`** or **`.sam`**.
+   - **<u>FASTQ files of multple lanes</u>**: both paired-end (e.g., sample3) and single-end (e.g., sample4). Filenames must be ended with **`.fq`**, **`.fastq`**, **`.fq.gz`** or **`.fastq.gz`**. The split FASTQ files of **mate1** and **mate2** must be listed in the same order and contenated using **<u>*, (comma)*</u>**.
 
-   - **<u>BAM/SAM files</u>**: alignment files with filenames ended with **`.bam`** or **`.sam`** (e.g., sample 5, sample6). Only single files for each sample are accepted. If your sample consists of multiple BAM/SAM files (such as splited files), please merge them before proceeding:
+   - **<u>BAM/SAM files</u>**: alignment files with filenames ending in **`.bam`**(e.g., sample 5) or **`.sam`** (e.g., sample6). Only one file per sample is accepted. If your sample consists of multiple BAM/SAM files (such as splited files), please merge them before proceeding:
 
      ``` bash
      samtools merge -o merged.bam input_1.bam input_2.bam ...
@@ -101,210 +103,174 @@ Below are the two ways we recommend to generate the sample table:
 
 * Any coding language you prefer, e.g. BASH, R, Python, Perl *et. al.*
 
-* **Excel** or **VIM**. And for you convince, we have a templete avaible here: `/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sampleTable.testdata.txt`. You can simply copy it to your own folder and edit it using VIM. For those who can't access to the path, download the template file here.
+* **Excel** or **VIM**. And for you convince, we have a templete avaible here: `/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sampleTable.testdata.txt`. You can simply copy it to your own folder and edit it using VIM. For those who can't access to the path, download the template file [here](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/sampleTable.testdata.txt).
 
   
 
 ## II. Data preprocessing
 
-The purpose of data preprocessing is to prepare the FASTQ files that can be directly used for down-stream quantification analysis. It contains two steps:
+The purpose of data preprocessing is to **prepare standard-in-format, clean-in-sequence FASTQ files** that can be directly used for downstream quantification analysis. It consists of two steps:
 
-- **Data format standardization**: it converts the input files that might be in various formats (FASTQ, BAM, SAM) into the standard FASTQ format. 
+- **Data format standardization**: It converts input files, which may be in various formats (FASTQ, BAM, or SAM), into the standard FASTQ format. 
 
-- **Adapter trimming**: it removes the adapeter and/or low-quality senquences from the reads.
+- **Adapter trimming**: It removes the adapeter sequences and low-quality bases from the reads.
 
   
 
-#### 1. Data format standardization
+1. **Data format standardization**
 
-To standardize the data format, you can run the command below:
+   To standardize the data format, you can run the command below:
 
-``` bash
-## 1. data format standardization
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/scripts/run/all2Fastq.pl sampleTable.txt
-```
+   ``` bash
+   ## 1. data format standardization
+   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/all2Fastq.pl sampleTable.txt
+   ```
 
-This command will:
+   This command will:
 
-- Create a folder, **`sampleID/preProcessing`**, in the output directory specified by the `output` column of sampleTable.txt.
-- Generate the **`sampleID/preProcessing/all2Fastq.sh`** file and submit it to the HPC queue.
+   - Create a folder, **`sampleID/preProcessing`**, in the output directory specified by the `output` column of sampleTable.txt.
 
-Typically, this step takes **5-10 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+   - Generate the **`sampleID/preProcessing/all2Fastq.sh`** file and submit it to the HPC queue.
 
-- For PE library type: two paired FASTQ files, **`sampleID/preProcessing/fqRaw_R1.fq.gz`** and **`sampleID/preProcessing/fqRaw_R1.fq.gz`**
-- For SE library type: one single FASTQ file, **`sampleID/preProcessing/fqRaw.fq.gz`**
+     
+
+   Typically, this step takes **5-10 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+
+   - For PE library type: two paired FASTQ files, **`sampleID/preProcessing/fqRaw_R1.fq.gz`** and **`sampleID/preProcessing/fqRaw_R1.fq.gz`**
+   - For SE library type: one single FASTQ file, **`sampleID/preProcessing/fqRaw.fq.gz`**
+
+2. **Adapter trimming**
+
+   You can perform the adapter trimming analysis by:
+
+   ``` bash
+   ## 2. adapter trimming
+   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/adapterTrimming.pl sampleTable.txt
+   ```
+
+   This command will:
+
+   - Generate the **`sampleID/preProcessing/adapterTrimming.sh`** file and submit it to the HPC queue.
+
+     
+
+   Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+
+   - **adapter trimming reports** in differnt formats: **`sampleID/preProcessing/adapterTrimming.html`** and **`sampleID/preProcessing/adapterTrimming.json`**
+   - **standard FASTQ files** with clean/filtered sequences:
+     - For PE library type: two paired FASTQ files, **`sampleID/preProcessing/fqClean_R1.fq.gz`** and **`sampleID/preProcessing/fqClean_R1.fq.gz`**
+     - For SE library type: one single FASTQ file, **`sampleID/preProcessing/fqClean.fq.gz`**
+
+After completing these two preprocessing steps, you will have standard FASTQ files with clean sequences that are ready to be used in subsequent quantification analysis.
 
 
-
-#### 2. Adapter trimming
-
-You can perform the adapter trimming analysis by:
-
-``` bash
-## 2. adapter trimming
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/scripts/run/adapterTrimming.pl sampleTable.txt
-```
-
-This command will:
-
-- Generate the **`sampleID/preProcessing/adapterTrimming.sh`** file and submit it to the HPC queue.
-
-Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
-
-- adapter trimming reports in differnt formats: **`sampleID/preProcessing/adapterTrimming.html`** and **`sampleID/preProcessing/adapterTrimming.json`**
-- standard FASTQ files with clean/filtered sequences:
-  - For PE library type: two paired FASTQ files, **`sampleID/preProcessing/fqClean_R1.fq.gz`** and **`sampleID/preProcessing/fqClean_R1.fq.gz`**
-  - For SE library type: one single FASTQ file, **`sampleID/preProcessing/fqClean.fq.gz`**
-
-After these two steps in data preprocessing, you should have the standard FASTQ files with clean sequences. They will be directly used in subsequent quantification analysis.
 
 ## III: Quantification
 
-In this pipeline, we provide five quantification methods:
+Though there are five quantification methods (see the table below) available in this pipleline, we use **Salmon** and **RSEM_STAR** as the default ones:
 
-| Methods           | Aligner                  | Quantifier                   | Measures              | Levels           | Speed *   | Strandness                                              |
-| ----------------- | ------------------------ | ---------------------------- | --------------------- | ---------------- | --------- | ------------------------------------------------------- |
-| Salmon            | NA                       | Salmon                       | Raw counts, TPM       | Gene, Transcript | ~30 mins  | automatically infer it                                  |
-| RSEM with STAR    | STAR (splice-aware)      | RSEM                         | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2 hrs   | manually set                                            |
-| RSEM with Bowtie2 | Bowtie2 (splice-unaware) | RSEM                         | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2.5 hrs | manually set                                            |
-| STAR              | STAR (splice-aware)      | STAR (avilable since v2.5.0) | Raw counts            | Gene             | ~ 1 hrs   | Not required for alignment, but need for quantification |
-| STAR with HTSeq   | STAR (splice-aware)      | HTSeq                        | Raw counts            | Gene, Transcript | ~ 1 hrs   | Not required for alignment, but need for quantification |
+- **<u>Salmon</u>**: a wicked-fast alignment-free method. Its accuracy has been further enhanced with the  introduction of **decoy sequences**. <u>*Salmon can automatically determine the strandness of your data, and this information will be utilized by other methods*</u>. These features make it an excellent complement to alignment-based methods for cross-validation purpose.
+- **RSEM_STAR**: an alignment-based method. We prefer STAR to Bowtie2 as the aligner for these two reasons: 1) **STAR** supports splice-aware alignment and hence usually produces higher mappling rates; 2) **STAR** is usually faster.
 
-\*: tested with 150 million PE-100 reads.
+| Methods      | Aligner                  | Quantifier                   | Measures              | Levels           | Speed *   | Strandness                                              |
+| :----------- | ------------------------ | ---------------------------- | --------------------- | ---------------- | --------- | ------------------------------------------------------- |
+| Salmon       | NA                       | Salmon                       | Raw counts, TPM       | Gene, Transcript | ~30 mins  | automatically infer it                                  |
+| RSEM_STAR    | STAR (splice-aware)      | RSEM                         | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2 hrs   | manually set                                            |
+| RSEM_Bowtie2 | Bowtie2 (splice-unaware) | RSEM                         | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2.5 hrs | manually set                                            |
+| STAR         | STAR (splice-aware)      | STAR (avilable since v2.5.0) | Raw counts            | Gene             | ~ 1 hrs   | Not required for alignment, but need for quantification |
+| STAR_HTSeq   | STAR (splice-aware)      | HTSeq                        | Raw counts            | Gene, Transcript | ~ 1 hrs   | Not required for alignment, but need for quantification |
 
-Though we provide the scripts to run all these five methods, we recommend Salmon and RSEM with STAR and set them as the default in this pipeline.
+<sup>**\***: tested with 150 million PE-100 reads.</sup>
 
-#### 1. Salmon (default #1)
+### 1. Salmon
 
 You can run Salmon quantification with the commands below:
 
 ``` bash
 ## 1. quantification by Salmon
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/scripts/run/adapterTrimming.pl sampleTable.txt
+/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/quantSalmon.pl sampleTable.txt
 ```
 
 This command will:
 
-- Create a folder: **`sampleID/quantSalmon`**
-- Generate the **`sampleID/quantSalmon/quantSalmon.sh`** file and submit it to the HPC queue.
+- Create a folder: **`/path-to-save-outputs/sampleID/quantSalmon`**
+- Generate the script: **`/path-to-save-outputs/sampleID/quantSalmon/quantSalmon.sh`** and submit it to the HPC queue.
 
 Typically, this step takes **~30 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
 
-- quantification results: **`sampleID/quantSalmon/quant.genes.sf`** for genes and **`sampleID/quantSalmon/quant.sf`** for transcripts
+- quantification results: **`quant.genes.sf`** for genes, and **`quant.sf`** for transcripts.
 
-- strandness estimation result: **`sampleID/quantSalmon/lib_format_counts.json`**. The row, "expected_format", indicates the strandness:
+- strandness estimation result: **`lib_format_counts.json`**. The row, "**expected_format**", indicates the estimated strandness:
 
-  | Salmon (--libType, SE/PE) | RSEM (--strandedness) | TopHap (--library-type) | HTSeq (--stranded) |
-  | ------------------------- | --------------------- | ----------------------- | ------------------ |
-  | U/IU                      | none                  | -fr-unstranded          | no                 |
-  | SR/ISR                    | reverse               | -fr-firststrand         | reverse            |
-  | SF/ISF                    | forward               | -fr-secondstrand        | yes                |
+  | Salmon (--libType) | RSEM (--strandedness) | TopHap (--library-type) | HTSeq (--stranded) |
+  | ------------------ | --------------------- | ----------------------- | ------------------ |
+  | U/IU               | none                  | -fr-unstranded          | no                 |
+  | SR/ISR             | reverse               | -fr-firststrand         | reverse            |
+  | SF/ISF             | forward               | -fr-secondstrand        | yes                |
 
 - some other files/folders
 
-#### 2. RSEM with STAR (default #2) 
+### 2. RSEM_STAR 
 
-You can run the quantification analysis with RSEM and STAR using the commands below:
+***<u>NOTE</u>***: This method determines library strandness based on the outputs from Salmon. Please ensure that all Salmon jobs have finished before proceeding.
+
+You can run the quantification analysis with RSEM_STAR method using the commands below:
 
 ``` bash
 ## 2. quantification by RSEM-STAR
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/scripts/run/quantRSEM_STAR.pl sampleTable.txt
+/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/quantRSEM_STAR.pl sampleTable.txt
 ```
 
 This command will:
 
-- Create a folder: **`sampleID/quantRSEM_STAR`**
-- Generate the **`sampleID/quantRSEM_STAR/quantRSEM_STAR.sh`** file and submit it to the HPC queue.
+- Create a folder: **`/path-to-save-outputs/sampleID/quantRSEM_STAR`**
+- Generate the script: **`/path-to-save-outputs/sampleID/quantRSEM_STAR/quantRSEM_STAR.sh`** and submit it to the HPC queue.
 
 Typically, this step takes **~2 hrs** to complete (for 150M PE-100 reads). The stardard outputs are:
 
-- quantification results: **`sampleID/quantRSEM_STAR/quant.genes.results`** for genes and **`sampleID/quantRSEM_STAR/quant.isoforms.results`** for transcripts
-- Transcriptome alignment result: **`sampleID/quantRSEM_STAR/quant.transcript.sorted.bam`**. This file is sorted by coordinates and has been indexed, so it can be directly used for other analysis. The gene body coverage analysis in the QC report is condcuted on this file.
-- Mapping rate statistics: **`sampleID/quantRSEM_STAR/quant.stat/quant.cnt`**.
-  - The four numbers on the first line reprsent Number of unalignable reads (`N0`), Number of alignable reads (`N1`), Number of reads filtered due to too many alignments (`N2`), and Number of total reads, respectively (`N_tot`). `N_total` = `N0` + `N1` + `N2`.
-  - The three number on the second line represent Number of reads aligned uniquely to a gene (`nUnique`), Number of reads aligned to multiple genes (`nMulti`), and Number of reads aligned to multiple locations in the given reference sequences, which include isoform-level multi-mapping reads (`nUncertain`), respectively. `N1` = `nUnique` + `nMulti`.
-  - The two numbers on the third line represent Number of total alignments (`nHits`) and read type (`0`, single-end read, no quality score; `1`, single-end read, with quality score; `2`, paired-end read, no quality score; `3`, paired-end read, with quality score).
+- quantification results: **`quant.genes.results`** for genes, and **`quant.isoforms.results`** for transcripts.
+- transcriptome alignment result: **`quant.transcript.sorted.bam`**. This file is sorted by coordinates and has been indexed. The gene body coverage analysis in the QC report is condcuted on this file.
+- mapping rate statistics: **`quant.stat/quant.cnt`**. This file contains the statistics of alignment and will be used in the QC report generation.
 - some other files/folders
 
 
-
-#### 3. RSEM with Bowtie2 (optional) 
-
-You can run the quantification analysis with RSEM and Bowtie2 using the commands below:
-
-``` bash
-## 3. quantification by RSEM-Bowtie2
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/scripts/run/quantRSEM_Bowtie2.pl sampleTable.txt
-```
-
-This command will:
-
-- Create a folder: **`sampleID/quantRSEM_Bowtie2`**
-- Generate the **`sampleID/quantRSEM_Bowtie2/quantRSEM_Bowtie2.sh`** file and submit it to the HPC queue.
-
-Typically, this step takes **~2.5 hrs** to complete (for 150M PE-100 reads). The stardard outputs are:
-
-- quantification results: **`sampleID/quantRSEM_Bowtie2/quant.genes.results`** for genes and **`sampleID/quantRSEM_Bowtie2/quant.isoforms.results`** for transcripts
-- Transcriptome alignment result: **`sampleID/quantRSEM_Bowtie2/quant.transcript.sorted.bam`**. This file is sorted by coordinates and has been indexed, so it can be directly used for other analysis. The gene body coverage analysis in the QC report is condcuted on this file.
-- Mapping rate statistics: **`sampleID/quantRSEM_Bowtie2/quant.stat/quant.cnt`**.
-  - The four numbers on the first line reprsent Number of unalignable reads (`N0`), Number of alignable reads (`N1`), Number of reads filtered due to too many alignments (`N2`), and Number of total reads, respectively (`N_tot`). `N_total` = `N0` + `N1` + `N2`.
-  - The three number on the second line represent Number of reads aligned uniquely to a gene (`nUnique`), Number of reads aligned to multiple genes (`nMulti`), and Number of reads aligned to multiple locations in the given reference sequences, which include isoform-level multi-mapping reads (`nUncertain`), respectively. `N1` = `nUnique` + `nMulti`.
-  - The two numbers on the third line represent Number of total alignments (`nHits`) and read type (`0`, single-end read, no quality score; `1`, single-end read, with quality score; `2`, paired-end read, no quality score; `3`, paired-end read, with quality score).
-- some other files/folders
-
-#### 4. STAR (optional) 
-
-In this method, STAR serves as both aligner and quantifier. It only estimates the raw counts of genes. To run it, please use the command below:
-
-``` bash
-## 4. quantification by STAR
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/scripts/run/quantSTAR.pl sampleTable.txt
-```
-
-This command will:
-
-- Create a folder: **`sampleID/quantSTAR`**
-- Generate the **`sampleID/quantSTAR/quantSTAR.sh`** file and submit it to the HPC queue.
-
-Typically, this step takes **~1 hrs** to complete (for 150M PE-100 reads). The stardard outputs are:
-
-- quantification results: **`sampleID/quantSTAR/ReadsPerGene.out.tab`** for genes. This file contains 4 columns: gene ID, counts for unstranded RNA-seq (`htseq-count option -s no`), counts for the 1st read strand aligned with RNA (`htseq-count option -s yes`), and counts for the 2nd read strand aligned with RNA (`htseq-count option -s reverse`), respectively.
-- Reads alignment results: **`sampleID/quantSTAR/Aligned.sortedByCoord.out.bam`** for genome alignments, sorted by coordinates, and**`sampleID/quantSTAR/Aligned.toTranscriptome.out.bam`** for transcriptome alignments.
-- some other files/folders
-
-#### 5. STAR with HTSeq (optional) 
-
-In this method, STAR serves as the aligner and HTSeq serves as the quantifier. The command to run STAR is exactly the same with the one in previous method. The only difference is that using HTSeq as the quantifier, it can estimate the raw counts of both genes and transcripts.
-
-Below is the command to run it:
-
-``` bash
-## 5. quantification by STAR-HTSeq
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/scripts/run/quantSTAR_HTSeq.pl sampleTable.txt
-```
-
-This command will:
-
-- Create a folder: **`sampleID/quantSTAR_HTSeq`**
-- Generate the **`sampleID/quantSTAR_HTSeq/quantSTAR_HTSeq.sh`** file and submit it to the HPC queue.
-
-Typically, this step takes **~1 hrs** to complete (for 150M PE-100 reads). The stardard outputs are:
-
-- quantification results: **`sampleID/quantSTAR_HTSeq/htseq_counts.genes.txt`** for genes, and **`sampleID/quantSTAR_HTSeq/htseq_counts.transcripts.txt`** for transcripts. Both files contains two columns: gene ID/transcript ID and raw counts.
-- Reads alignment results: **`sampleID/quantSTAR_HTSeq/Aligned.out.bam`** for genome alignments, and**`sampleID/quantSTAR/Aligned.toTranscriptome.out.bam`** for transcriptome alignments.
-- some other files/folders
 
 ## IV: Summarization
 
-There are two purposes in the Summarization analysis:
+The **Summarization** analysis processes the outputs of both **Salmon** and **RSEM_STAR** quantification analyses, and generates a comprehensive HTML quality control (QC) report for each sample. If multiple samples are provided, the analysis will also produce an universal QC report and gene expressioin matrix that includes all samples.
 
-- generate the universal gene expression matrix containing all samples
-- generate a QC report for each sample. If multiple samples are given, it also generates an universal QC report summazing all samples there.
+The summarization analysis consists of three steps:
 
-The summarization analysis in this pipeline includes three steps:
+- **calculate gene body coverage**: this is a widely-used metrics indicating the extend of RNA degradation.
+- **generate QC report for individual samples**: this produces a HTML QC report for each sample.
+- **generate QC report for all samples**: this produces a HTML QC report for all samples. This is only needed when multiple samples are provided.
 
-- gene body coverage statistics: this is a widely-used metrics indicating the extend of RNA degradation.
-- 
+1. **Calculate gene body coverage**
+
+   **Gene body coverage** refers to how evenly sequencing reads are distributed along the length of a gene's transcript, from the 5' end to the 3' end. **RNA degradation** typically occurs from the ends of RNA molecules, most often starting at the 5' end. If the RNA is degraded, we often see a bias, a "drop-off" of coverage, at either end. So, by examining gene body coverage, we can detect whether the RNA samples are intact or degraded.
+
+   
+
+   You can calcuate the gene body coverage using the command below:
+
+   ``` bash
+   ## 1. calculate gene body coverage
+   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/genebodyCoverage.pl sampleTable.txt
+   ```
+
+   This command will:
+
+   - Generate the script: **`/path-to-save-outputs/sampleID/quantRSEM_STAR/genebodyCoverage.sh`** and submit it to the HPC queue.
+
+   Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+
+   - gene body coverage results: **`genebodyCoverage.txt`**. It saves the raw counts of reads distributed in each bin of the longest transcripts of housekeeping/all genes.
+
+   - some other files/folders
+
+2. **Generate QC report for individual samples**
+
+   Dfasdf
 
 ``` bash
 ## 0. activate the conda env
