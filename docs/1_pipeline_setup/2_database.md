@@ -24,7 +24,7 @@ cd /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env
 
    There are **FOUR** files required for database preparation. Three of them can be directly downloaded from online resources:
 
-   - **<u>*annotation.gtf*</u>**: Gene Annotation file in [GTF](https://biocorecrg.github.io/PhD_course_genomics_format_2021/gtf_format.html) (Gene Transfer Format) format. 
+   - ***<u>annotation.gtf</u>***: Gene Annotation file in [GTF](https://biocorecrg.github.io/PhD_course_genomics_format_2021/gtf_format.html) (Gene Transfer Format) format. 
 
    - ***<u>transcriptome.fa</u>***: Transcriptome sequence file in [FASTA](https://www.ncbi.nlm.nih.gov/genbank/fastaformat/) format
 
@@ -164,7 +164,7 @@ cd /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env
    cat $dir_database/transcripts.fa $dir_database/genome.fa > $dir_database/bulkRNAseq/Salmon/gentrome.fa
    
    # Salmon indexing
-   salmon index -t $dir_database/bulkRNAseq/Salmon/gentrome.fa -d $dir_database/bulkRNAseq/Salmon/decoys.txt -p 8 -i index_decoy --gencode -k 31
+   $dir_bin/salmon index -t $dir_database/bulkRNAseq/Salmon/gentrome.fa -d $dir_database/bulkRNAseq/Salmon/decoys.txt -p 8 -i index_decoy --gencode -k 31
    ```
 
 6. **Create genome index files for STAR**

@@ -5,36 +5,36 @@ nav_order: 3
 permalink: /docs/2_quick_tutorial/quick_tutorial
 ---
 
-### A quick tutorial to run this pipeline
+# Quick Tutorial for Running the Pipeline
 
 ---
 
-Welcome to the **quick tutorial** of bulk RNA-Seq quantification pipeline! This tutorial aims to provide **immediate and practical guidance** on running this pipeline with your own data. As a quick tutorial, this is mainly for the users who are familar with the basic concepts and tools of RNA-Seq quantification analysis. If you are new to this field, we highly recommend you to start from the **Full Tutorial** that provides more detailed documentation of this pipeline.
+Welcome to the **Quick Tutorial** for the bulk RNA-seq quantification pipeline! This tutorial aims to provide **immediate and practical guidance** for running this pipeline with your own data. As a quick tutorial, it is intended for users who are already familar with the basic concepts and tools of RNA-seq quantification analysis. If you are new to this field, we highly recommend starting with the **Full Tutorial**, which provides comprehensive documentation and step-by-step guidance.
 
-To get started, please run the command below to activate the conda environment for this pipeline:
+To get started, activate the conda environment for this pipeline using the following commands:
 
 ``` bash
-module load conda3/202402
+module load conda3/202402 # conda version: 24.1.2
 conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
 ```
 
-If you have your own conda environment, change the commands accordingly. To set up a conda environment for this pipeline, pelase refer to [Pipeline Setup](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/pipeline_setup/index) tutorial.
+If you are using a different conda environment, please change the path accordingly. To set up a conda environment for this pipeline, please refer to the [Pipeline Setup](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/pipeline_setup/index) tutorial.
 
-#### I. Prepare the sample table
+## I. Prepare the sample table
 
 Below is an example of the sample table for this pipeline:
 
-![image](../_figures/sampleTable_template.png)
+![image](../figures/sampleTable_template.png)
 
   It is a **tab-delimited text file with 6 columns**:
 
 1) **<u>sampleID</u>**: name of samples. Some rules apply:
-   - Should contain **letters**, **numbers** or **underscores** only
-   - Should NOT **start with numbers**
+   - Should contain **letters**, **numbers** or **underscores** only;
+   - Should NOT **start with numbers**.
 
-2. **<u>libraryType</u>**: type of libraries, `[PE | SE]`. 
+2. **<u>libraryType</u>**: type of libraries, paired-end or single-end, **`[PE | SE]`**. 
 
-   - My input files are in BAM/SAM format, and I'm not sure about the library type of them? The command below can tell that:
+   - For BAM/SAM file inputs, not sure about their library type? You can use the command below to determine the library type:
 
      ``` bash
      ## To tell the BAM/SAM files are single- or paired-end
@@ -43,11 +43,21 @@ Below is an example of the sample table for this pipeline:
      # It returns 0 for single-end sequeing. Otherwise, the input bam/sam file is paired-end.
      ```
 
-3. **<u>phredMethod</u>**: Phred quality score encoding method, `[Phred33 | Phred64]`. Not sure about the answer? These two rules can help tell that:
+   - For FASTQ file inputs, you typically have two paired files for **`PE`** data or one single file for **`SE`**data. An exception, though exceedingly rare, is an **interleaved** FASTQ file, where both **mate1** and **mate2** reads are combined in a single file. ***This pipeline does not support interleaved FASTQ files as standard input.*** If you data is in this format, you will need to split it into two seperate FASTQ files before including them in your sample table.
 
-   - Phred64 was retired in late 2011. Data genrated after that should be in Phred33.
+     ```bash
+     ## To split an interleaved FASTQ file
+     fastp --interleaved_in --in1 interleaved.fq --out1 fqRaw_R1.fq.gz --out2 fqRaw.R2.fq.gz
+     # Then, use 'PE' as the library type and use 'fqRaw_R1.fq.gz' and 'fqRaw_R2.fq.gz' as the input in your sample table
+     ```
 
-   - Use the FastQC to tell that: 
+3. **<u>phredMethod</u>**: Phred quality score encoding method, **`[Phred33 | Phred64]`**.
+
+   Not sure about the answer? These two guidelines can help you determine the correct Phred encoding method:
+
+   - **Phred64** was retired in late 2011. Data genrated after that time should use **Phred33**.
+
+   - You can use ***FastQC*** to identify the Phred encoding of your input files: 
 
      ``` bash
      ## To tell the Phred quality score encoding method in FASTQ/BAM/SAM files
@@ -57,35 +67,45 @@ Below is an example of the sample table for this pipeline:
      # "Sanger / Illumina 1.9" indicates Phred33, while "Illumina 1.5 or lower" indicates Phred64.
      ```
 
-4. **<u>reference</u>**: reference genome assembly, `[hg38 | hg19 | mm39 | mm10]`. 
+4. **<u>reference</u>**: path to reference genome database folder. There are pre-built datasets for four reference genome assemblies:
 
-   - We recommend to use `hg38` for human samples, and `mm39` for mouse samples. The assembly, `hg19` and `mm10`, are mainly used to match some legacy data.
-   - For other species or genome assembly, you will need to manually create the required reference files following [this tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/pipeline_setup/reference.html).
+   | Genome Assembly | Path                                                         |
+   | --------------- | ------------------------------------------------------------ |
+   | hg38/GRCh38.p14 | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/hg38/gencode.release48 |
+   | hg19/GRCh37.p13 | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/hg19/gencode.release48lift37 |
+   | mm39/GRCm39     | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/mm39/gencode.releaseM37 |
+   | mm10/GRCm38.p6  | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/databases/mm10/gencode.releaseM25 |
 
-5. **<u>input</u>**: input files for quantification. This pipeline accepts:
+   If you are using a different conda environment, please change the paths accordingly. To set up a reference genome database, please refer to the [Database Preparation](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/2_database.html) tutorial.
 
-   - **<u>Standard FASTQ files</u>**: both paired-end (sample1) and single-end (sample2). Filenames should be ended with **`.fq`**, **`.fastq`**, **`.fq.gz`** or **`.fastq.gz`**.
+   - We recommend to use **`hg38`** for human samples, and **`mm39`** for mouse samples. The other assemblies, **`hg19`** and **`mm10`**, are mainly used to match some legacy data.
+   - If you can't acccess to the paths listed above, or if you require other genome assemblies, you will need to manually create the reference files by following the [Database Preparation](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/2_database.html) tutorial.
 
-   - **<u>FASTQ files of multple lanes</u>**: both paired-end (sample3) and single-end (sample4). Filenames should be ended with **`.bam`** or **`.sam`**.
+5. **<u>input</u>**: input files for quantification. This pipeline accepts the following formats:
 
-   - **<u>BAM/SAM files</u>**: single file only (sample 5 and sample6). For samples with  multiple BAM/SAM files (usually splited ones), please merge them first:
+   - **<u>Standard FASTQ files</u>**: both paired-end (e.g., sample1) and single-end (e.g., sample2). Filenames must be ended with **`.fq`**, **`.fastq`**, **`.fq.gz`** or **`.fastq.gz`**.
+
+   - **<u>FASTQ files of multple lanes</u>**: both paired-end (e.g., sample3) and single-end (e.g., sample4). Filenames must be ended with **`.bam`** or **`.sam`**.
+
+   - **<u>BAM/SAM files</u>**: alignment files with filenames ended with **`.bam`** or **`.sam`** (e.g., sample 5, sample6). Only single files for each sample are accepted. If your sample consists of multiple BAM/SAM files (such as splited files), please merge them before proceeding:
 
      ``` bash
-     samtools merge -o output.bam input_1.bam input_2.bam ...
+     samtools merge -o merged.bam input_1.bam input_2.bam ...
      ```
 
-6. **<u>output</u>**: path to save the output files. This pipeline will create a folder named by the `sampleID` under this directory.
+6. **<u>output</u>**: the directory where output files will be saved. This pipeline will create a subfolder named by the **`sampleID`** within this directory.
 
 
 
 Below are the two ways we recommend to generate the sample table:
 
 * Any coding language you prefer, e.g. BASH, R, Python, Perl *et. al.*
-* Excel or VIM. And for you convince, we have a templete avaible on HPC: `/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sampleTable.testdata.txt`. You can simply copy it to your folder and edit it in VIM. (To insert TAB in VIM: on INSERT mode press control + v + TAB)
 
+* **Excel** or **VIM**. And for you convince, we have a templete avaible here: `/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sampleTable.testdata.txt`. You can simply copy it to your own folder and edit it using VIM. For those who can't access to the path, download the template file here.
 
+  
 
-### II. Data preprocessing
+## II. Data preprocessing
 
 The purpose of data preprocessing is to prepare the FASTQ files that can be directly used for down-stream quantification analysis. It contains two steps:
 
@@ -138,9 +158,7 @@ Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The 
 
 After these two steps in data preprocessing, you should have the standard FASTQ files with clean sequences. They will be directly used in subsequent quantification analysis.
 
-
-
-### III: Quantification
+## III: Quantification
 
 In this pipeline, we provide five quantification methods:
 
@@ -276,7 +294,7 @@ Typically, this step takes **~1 hrs** to complete (for 150M PE-100 reads). The s
 - Reads alignment results: **`sampleID/quantSTAR_HTSeq/Aligned.out.bam`** for genome alignments, and**`sampleID/quantSTAR/Aligned.toTranscriptome.out.bam`** for transcriptome alignments.
 - some other files/folders
 
-### IV: Summarization
+## IV: Summarization
 
 There are two purposes in the Summarization analysis:
 
