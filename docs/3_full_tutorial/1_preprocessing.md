@@ -22,6 +22,16 @@ Usually, you have two FASTQ files (R1, R2) for each paired-end sequencing sample
   <p>There is an EXCEEDINGLY RARE situation that your input data is in interleaved FASTQ format. In this format, both mate1 and mate2 reads are combined in a single FASTQ file. This mean, though you just have one FASTQ file per sample, the library type is paired-end, not single-end. You can split the interleaved FASTQ file using the command below:</p>
 </div>
 
+<details>
+  <summary><strong>NOTE: One FASTQ file per sample does not ALWAYS indicate single-end library.</strong></summary>
+  There is an EXCEEDINGLY RARE situation that your input data is in interleaved FASTQ format.
+  In this format, both mate1 and mate2 reads are combined in a single FASTQ file. This mean, though you just have one FASTQ file per sample, the library type is paired-end, not single-end.
+  You can split the interleaved FASTQ file using the command below:
+  <code>## To split an interleaved FASTQ file
+    fastp --interleaved_in --in1 interleaved.fq --out1 fqRaw_R1.fq.gz --out2 fqRaw_R2.fq.gz
+  </code>
+</details>
+
 **NOTE**: There is an ***exceedingly rare*** situation that your input data is in **interleaved FASTQ** format. In this format, both **mate1** and **mate2** reads are combined in a single FASTQ file. This mean, though you just have one FASTQ file per sample, the library type is paired-end, not single-end. You can split the interleaved FASTQ file using the command below:
 
 ```bash
