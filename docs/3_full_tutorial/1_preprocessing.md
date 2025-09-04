@@ -17,30 +17,14 @@ In a pipeline, it's important to **standardize the inputs** for each step. Howev
 
 Usually, you have two FASTQ files (R1, R2) for each paired-end sequencing sample (e.g. sample1), or one single FASTQ file for each single-end sequencing sample (e.g. sample2). If so, you are good to move to the **Adapter Trimming** step.
 
-<div style="border: 1px solid blue; padding: 10px; background-color: lightblue;">
-  <p><strong>Note:</strong>One FASTQ file per sample does not ALWAYS indicate single-end library.</p>
-  <p>There is an EXCEEDINGLY RARE situation that your input data is in interleaved FASTQ format. In this format, both mate1 and mate2 reads are combined in a single FASTQ file. This mean, though you just have one FASTQ file per sample, the library type is paired-end, not single-end. You can split the interleaved FASTQ file using the command below:</p>
-</div>
-
-<details>
-  <summary><strong>NOTE: One FASTQ file per sample does not ALWAYS indicate single-end library.</strong></summary>
-  There is an EXCEEDINGLY RARE situation that your input data is in interleaved FASTQ format.
-  In this format, both mate1 and mate2 reads are combined in a single FASTQ file. This mean, though you just have one FASTQ file per sample, the library type is paired-end, not single-end.
-  You can split the interleaved FASTQ file using the command below:
-  <code>## To split an interleaved FASTQ file
-    fastp --interleaved_in --in1 interleaved.fq --out1 fqRaw_R1.fq.gz --out2 fqRaw_R2.fq.gz
-  </code>
-</details>
-
-**NOTE**: There is an ***exceedingly rare*** situation that your input data is in **interleaved FASTQ** format. In this format, both **mate1** and **mate2** reads are combined in a single FASTQ file. This mean, though you just have one FASTQ file per sample, the library type is paired-end, not single-end. You can split the interleaved FASTQ file using the command below:
-
-```bash
-## To split an interleaved FASTQ file
-fastp --interleaved_in --in1 interleaved.fq --out1 fqRaw_R1.fq.gz --out2 fqRaw_R2.fq.gz
-# Then, use 'PE' as the library type and use 'fqRaw_R1.fq.gz' and 'fqRaw_R2.fq.gz' as the input in your sample table
-```
-
-
+> NOTE: There is an ***exceedingly rare*** situation that your input data is in **interleaved FASTQ** format. In this format, both **mate1** and **mate2** reads are combined in a single FASTQ file. This mean, though you just have one FASTQ file per sample, the library type is paired-end, not single-end. You can split the interleaved FASTQ file using the command below:
+>
+> ``` bash
+> ## To split an interleaved FASTQ file
+> fastp --interleaved_in --in1 interleaved.fq --out1 fqRaw_R1.fq.gz --out2 fqRaw_R2.fq.gz
+> ```
+>
+> 
 
 However, if this is not the case, you will need to generate the raw FASTQ files by yourself:
 
