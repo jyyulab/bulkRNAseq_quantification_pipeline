@@ -5,143 +5,37 @@ nav_order: 4
 permalink: /docs/3_full_tutorial/index
 ---
 
-### Step-by-Step Tutorial
+# Full Tutorial for Runing the Pipeline
 
 ---
 
-In this section, we provide a **step-by-step tutorial** to run this pipeline. This is mainly for learning purpose.
-For each step, we will introduce:
+Welcome to the **Full Tutorial** for the bulk RNA-seq quantification pipeline! This tutorial provides **comprehensive documentation** and **step-by-step** guidance for this pipeline. and it is intended for users who are new to this field. From this tutorial, you will find detailed instructions to the **rationale**, **inputs**, **outputs** and **key parameters** for each step. If you want to quickly run this pipeline on your own data, please refer to the [**Quick Tutorial**](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/2_quick_tutorial/quick_tutorial).
 
-- why we need it?
-- the specific commands to run it and the key arguments
-- key outputs
+### Before you get started
 
-### A quick run of this pipeline
+1. Please make sure you have set up this pipeline in your end.
 
----
+   This pipeline, including its **tools**, **databases**, and **scripts**, can be set up and maintained in a single conda environment. We have set up this pipeline in the conda environment below, with four pre-built genome assemblies: hg38, hg19, mm39 and mm10. You can activate it using the following commands:
 
-In practice, you usually have multiple samples to analyze, and it would be tedious and less efficient to do it in a line-by-line manor. Instead, for the best practice, we desigend a sample table-centered strategy to run this pipeline quickly and easily.
+   ``` bash
+   module load conda3/202402 # conda version: 24.1.2
+   conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025 # change it to your conda environment accordingly
+   ```
 
-#### I. Prepare the sample table
+   - If you can access to it but require a different reference genome assembly, please refer to the [Database Preparation](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/1_pipeline_setup/2_database.html) tutorial.
+   - To set up a conda environment for this pipeline in you end, please refer to the [Pipeline Setup](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/pipeline_setup/index) tutorial. It typically takes **~3** hours to complete.
 
-Below is an example of the sample table for this pipeline:
+2. Please make sure you have the input data in your hands.
 
-![image](sampleTable_template.png)
+   This pipeline accepts both **FASTQ files** and pre-computated alignment (**BAM/SAM**) files. If you do not have input samples to start with, you can use the test data we provide in this pipeline:
 
-  It is a **tab-delimited text file with 6 columns**:
-
-1) **<u>sampleID</u>**: name of samples. Some rules apply:
-   - Should contain **letters**, **numbers** or **underscores** only
-   - Should NOT **start with numbers**
-
-2. **<u>libraryType</u>**: type of libraries, `[PE | SE]`. 
-
-   - My input files are in BAM/SAM format, and I'm not sure about the library type of them? The command below can tell that:
-
-     ``` bash
-     ## To tell the BAM/SAM files are single- or paired-end
-     samtools view -c -f 1 input.bam
-     # This command counts the matching records in the bam/sam file.
-     # It returns 0 for single-end sequeing. Otherwise, the input bam/sam file is paired-end.
-     ```
-
-3. **<u>phredMethod</u>**: Phred quality score encoding method, `[Phred33 | Phred64]`. Not sure about the answer? These two rules can help tell that:
-
-   - Phred64 was retired in late 2011. Data genrated after that should be in Phred33.
-
-   - Use the FastQC to tell that: 
-
-     ``` bash
-     ## To tell the Phred quality score encoding method in FASTQ/BAM/SAM files
-     fastqc input.fq.gz # for FASTQ files
-     fastqc input.bam # for BAM/SAM files
-     # This command generates a html report. In the "Basic Statistics" section, there is a measure called "Endcoding":
-     # "Sanger / Illumina 1.9" indicates Phred33, while "Illumina 1.5 or lower" indicates Phred64.
-     ```
-
-4. **<u>reference</u>**: reference genome assembly, `[hg38 | hg19 | mm39 | mm10]`. 
-   - We recommend to use `hg38` for human samples, and `mm39` for mouse samples. The assembly, `hg19` and `mm10`, are mainly used to match some legacy data.
-   - For other species or genome assembly, you will need to manually create the required reference files following [this tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/pipeline_setup/reference.html).
-
-5. **<u>input</u>**: input files for quantification. This pipeline accepts:
-
-   - **<u>Standard FASTQ files</u>**: both paired-end (sample1) and single-end (sample2).
-
-   - **<u>FASTQ files of multple lanes</u>**: both paired-end (sample3) and single-end (sample4).
-
-   - **<u>BAM/SAM files</u>**: single file only (sample 5 and sample6). For samples with  multiple BAM/SAM files (usually splited ones), please merge them first:
-
-     ``` bash
-     samtools merge -o output.bam input_1.bam input_2.bam ...
-     ```
-
-6. **<u>output</u>**: path to save the output files. This pipeline will create a folder named by the `sampleID` under this directory.
-
-That's it! This table is the only one you need to prepare. You can generate it in either of these ways:
-
-* Any coding language you prefer, e.g. BASH, R, Python, Perl *et. al.*
-* Excel or VIM. And for you convince, we have a templete avaible on HPC: /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/git_repo/testdata/sampleTable.testdata.txt. You can simply copy it to your folder and edit it in VIM. (To insert TAB in VIM: on INSERT mode press control + v + TAB)
-
-
-
-### II. Run the script of each step
-
-
-
-``` bash
-## 0. activate the conda env
-module load conda3/202210
-conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023
-
-## 1. preprocessing
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/preProcessing.pl sampleTable.txt
-
-## 2. adapterTrimming
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/adapterTrimming.pl sampleTable.txt
-
-## 3. quantify by Salmon
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/quantSalmon.pl sampleTable.txt
-
-## 4. genebody coverage
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/geneCoverage.pl sampleTable.txt
-
-## 5. quantification summary
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/quantSummary.pl sampleTable.txt
-
-```
-
-
-
-
-
-It's mainly for learning purpose, and you are welcome to go throught them line by line, mainly for learning purposes. In practice, you usually have multiple samples to run, and it could be tedious to run  
-
-There are two parts to set up this pipeline:
-
-- **Software installation**: to install all tools required by this pipeline.
-- **Reference preparation**: to generate reference files used in this pipeline.
-
-For Yu Lab members, we have set this pipeline up on HPC:
-
-- All the tools have been compiled in one conda environment, which can be launched by:
-
-  ``` bash
-  module load conda3/202402
-  conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
-  ```
-
-- We have generated the files for four reference genomes: hg38, hg19, mm39 and mm10.
-
-
-  | Genome            | GENCODE release | Release date | Ensembl release | Path                                                         |
-  | ----------------- | --------------- | ------------ | --------------- | ------------------------------------------------------------ |
-  | hg38 (GRCh38.p14) | v48             | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48 |
-  | hg19 (GRCh37.p13) | v48lift37*      | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release48 |
-  | mm39 (GRCm39)     | vM37            | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm39/gencode.releaseM37 |
-  | mm10 (GRCm38.p6)  | vM25            | 04.2020**    | v100            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM25 |
-
-  *: The updates for the hg19/GRCh37 genome assembly have stopped in 2013. However, gene annotation continue to be updated by mapping the comprehensive gene annotations originally created for the GRCh38/hg38 reference chromosomes onto GRCh37 primary assembly using [gencode-backmap](https://github.com/diekhans/gencode-backmap) .
-
-  **: The updates for the mm10/GRCm38 genome assembly and gene annotation have stopped in 2019.
-
-You should run this tutorial only when you want to set up this pipeline locally or complie other reference genome / gene annotation.
+   | Sample ID | Species | Library Type | File Format           | # Raw Reads               | Preparation                |
+   | --------- | ------- | ------------ | --------------------- | ------------------------- | -------------------------- |
+   | sample1   | Human   | PE-100       | FASTQ                 | 38,820,746 (19,410,373*2) | Downsampled from real data |
+   | sample2   | Mouse   | SE-50        | FASTQ                 | 16,005,450                | Downsampled from real data |
+   | sample3   | Human   | PE-100       | FASTQ, split by lanes | 38,820,746 (19,410,373*2) | Split from sample1         |
+   | sample4   | Human   | SE-50        | FASTQ, split by lanes | 16,005,450                | Split from sample2         |
+   | sample5   | Human   | PE-100       | BAM                   | 27,712,150 (13,856,075*2) | Downsampled from real data |
+   | sample6   | Mouse   | SE-50        | BAM                   | 13,533,152                | Downsampled from real data |
+   
+   

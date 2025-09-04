@@ -9,7 +9,7 @@ permalink: /docs/2_quick_tutorial/quick_tutorial
 
 ---
 
-Welcome to the **Quick Tutorial** for the bulk RNA-seq quantification pipeline! This tutorial aims to provide **immediate and practical guidance** for running this pipeline with your own data. As a quick tutorial, it is intended for users who are already familar with the basic concepts and tools of RNA-seq quantification analysis. If you are new to this field, we highly recommend starting with the **Full Tutorial**, which provides comprehensive documentation and step-by-step guidance.
+Welcome to the **Quick Tutorial** for the bulk RNA-seq quantification pipeline! This tutorial aims to provide **immediate and practical guidance** for running this pipeline with your own data. As a quick tutorial, it is intended for users who are already familar with the basic concepts and tools of RNA-seq quantification analysis. If you are new to this field, we highly recommend starting with the **[Full Tutorial](https://jyyulab.github.io/bulkRNAseq_quantification_pipeline/docs/3_full_tutorial/index)**, which provides comprehensive documentation and step-by-step guidance.
 
 To get started, activate the conda environment for this pipeline using the following commands:
 
@@ -49,7 +49,7 @@ The **sample table** is a table summarizing the essential information for all in
 
      ```bash
      ## To split an interleaved FASTQ file
-     fastp --interleaved_in --in1 interleaved.fq --out1 fqRaw_R1.fq.gz --out2 fqRaw.R2.fq.gz
+     fastp --interleaved_in --in1 interleaved.fq --out1 fqRaw_R1.fq.gz --out2 fqRaw_R2.fq.gz
      # Then, use 'PE' as the library type and use 'fqRaw_R1.fq.gz' and 'fqRaw_R2.fq.gz' as the input in your sample table
      ```
 
