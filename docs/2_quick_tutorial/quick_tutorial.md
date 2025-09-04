@@ -117,49 +117,47 @@ The purpose of data preprocessing is to **prepare standard-in-format, clean-in-s
 
   
 
-1. **Data format standardization**
+### **1. Data format standardization**
 
-   To standardize the data format, you can run the command below:
+To standardize the data format, you can run the command below:
 
-   ``` bash
-   ## 1. data format standardization
-   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/all2Fastq.pl sampleTable.txt
-   ```
+``` bash
+## 1. data format standardization
+/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/all2Fastq.pl sampleTable.txt
+```
 
-   This command will:
+This command will:
 
-   - Create a folder, **`sampleID/preProcessing`**, in the output directory specified by the `output` column of sampleTable.txt.
+- Create a folder, **`sampleID/preProcessing`**, in the output directory specified by the `output` column of sampleTable.txt.
 
-   - Generate the **`sampleID/preProcessing/all2Fastq.sh`** file and submit it to the HPC queue.
+- Generate the **`sampleID/preProcessing/all2Fastq.sh`** file and submit it to HPC queues.
 
-     
+  
 
-   Typically, this step takes **5-10 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+Typically, this step takes **5-10 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
 
-   - For PE library type: two paired FASTQ files, **`sampleID/preProcessing/fqRaw_R1.fq.gz`** and **`sampleID/preProcessing/fqRaw_R1.fq.gz`**
-   - For SE library type: one single FASTQ file, **`sampleID/preProcessing/fqRaw.fq.gz`**
+- For PE library type: two paired FASTQ files, **`sampleID/preProcessing/fqRaw_R1.fq.gz`** and **`sampleID/preProcessing/fqRaw_R1.fq.gz`**
+- For SE library type: one single FASTQ file, **`sampleID/preProcessing/fqRaw.fq.gz`**
 
-2. **Adapter trimming**
+### **2. Adapter trimming**
 
-   You can perform the adapter trimming analysis by:
+You can perform the adapter trimming analysis by:
 
-   ``` bash
-   ## 2. adapter trimming
-   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/adapterTrimming.pl sampleTable.txt
-   ```
+``` bash
+## 2. adapter trimming
+/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/adapterTrimming.pl sampleTable.txt
+```
 
-   This command will:
+This command will:
 
-   - Generate the **`sampleID/preProcessing/adapterTrimming.sh`** file and submit it to the HPC queue.
+- Generate the **`sampleID/preProcessing/adapterTrimming.sh`** file and submit it to HPC queues.
 
-     
+Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
 
-   Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
-
-   - **adapter trimming reports** in differnt formats: **`sampleID/preProcessing/adapterTrimming.html`** and **`sampleID/preProcessing/adapterTrimming.json`**
-   - **standard FASTQ files** with clean/filtered sequences:
-     - For PE library type: two paired FASTQ files, **`sampleID/preProcessing/fqClean_R1.fq.gz`** and **`sampleID/preProcessing/fqClean_R1.fq.gz`**
-     - For SE library type: one single FASTQ file, **`sampleID/preProcessing/fqClean.fq.gz`**
+- **adapter trimming reports** in differnt formats: **`sampleID/preProcessing/adapterTrimming.html`** and **`sampleID/preProcessing/adapterTrimming.json`**
+- **standard FASTQ files** with clean/filtered sequences:
+  - For PE library type: two paired FASTQ files, **`sampleID/preProcessing/fqClean_R1.fq.gz`** and **`sampleID/preProcessing/fqClean_R1.fq.gz`**
+  - For SE library type: one single FASTQ file, **`sampleID/preProcessing/fqClean.fq.gz`**
 
 After completing these two preprocessing steps, you will have standard FASTQ files with clean sequences that are ready to be used in subsequent quantification analysis.
 
@@ -198,9 +196,11 @@ This command will:
 
 Typically, this step takes **~30 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
 
-- quantification results: **`quant.genes.sf`** for genes, and **`quant.sf`** for transcripts.
+- **`quant.genes.sf`**: **gene-level** quantification results
 
-- strandness estimation result: **`lib_format_counts.json`**. The row, "**expected_format**", indicates the estimated strandness:
+- **`quant.sf`**: transcript-level quantificaiton results
+
+- **`lib_format_counts.json`**: strandness estimation result. The row, "**expected_format**", indicates the estimated strandness:
 
   | Salmon (--libType) | RSEM (--strandedness) | TopHap (--library-type) | HTSeq (--stranded) |
   | ------------------ | --------------------- | ----------------------- | ------------------ |
@@ -208,7 +208,7 @@ Typically, this step takes **~30 mins** to complete (for 150M PE-100 reads). The
   | SR/ISR             | reverse               | -fr-firststrand         | reverse            |
   | SF/ISF             | forward               | -fr-secondstrand        | yes                |
 
-- some other files/folders
+- Some other files/folders
 
 ### 2. RSEM_STAR 
 
@@ -228,10 +228,11 @@ This command will:
 
 Typically, this step takes **~2 hrs** to complete (for 150M PE-100 reads). The stardard outputs are:
 
-- quantification results: **`quant.genes.results`** for genes, and **`quant.isoforms.results`** for transcripts.
-- transcriptome alignment result: **`quant.transcript.sorted.bam`**. This file is sorted by coordinates and has been indexed. The gene body coverage analysis in the QC report is condcuted on this file.
-- mapping rate statistics: **`quant.stat/quant.cnt`**. This file contains the statistics of alignment and will be used in the QC report generation.
-- some other files/folders
+- **`quant.genes.results`**: **gene-level** quantificaiton results
+- **`quant.isoforms.results`**: **transcript-level** quantificaiton results
+- **`quant.transcript.sorted.bam`**: transcriptome alignment result. This file is sorted by coordinates and has been indexed. The gene body coverage analysis in the QC report is condcuted on this file.
+- **`quant.stat/quant.cnt`**: This file contains the statistics of transcriptome alignment and is used to generate the QC report.
+- Some other files/folders
 
 
 
@@ -239,99 +240,94 @@ Typically, this step takes **~2 hrs** to complete (for 150M PE-100 reads). The s
 
 The **Summarization** analysis processes the outputs of both **Salmon** and **RSEM_STAR** quantification analyses, and generates a comprehensive HTML quality control (QC) report for each sample. If multiple samples are provided, the analysis will also produce an universal QC report and gene expressioin matrix that includes all samples.
 
-The summarization analysis consists of three steps:
+The summarization analysis consists of three main steps:
 
-- **calculate gene body coverage**: this is a widely-used metrics indicating the extend of RNA degradation.
-- **generate QC report for individual samples**: this produces a HTML QC report for each sample.
-- **generate QC report for all samples**: this produces a HTML QC report for all samples. This is only needed when multiple samples are provided.
+- **Gene body coverage**: A widely-used metric for assessing the extend of RNA degradation.
+- **Individual sample QC report**: Generates an HTML quality control report **for each sample**.
+- **Combined QC report**: Produces an HTML quality control report **summarizing all samples**. This is only needed when multiple samples are provided.
 
-1. **Calculate gene body coverage**
+### **1. Gene body coverage**
 
-   **Gene body coverage** refers to how evenly sequencing reads are distributed along the length of a gene's transcript, from the 5' end to the 3' end. **RNA degradation** typically occurs from the ends of RNA molecules, most often starting at the 5' end. If the RNA is degraded, we often see a bias, a "drop-off" of coverage, at either end. So, by examining gene body coverage, we can detect whether the RNA samples are intact or degraded.
+**Gene body coverage** measures how evenly sequencing reads are distributed along the length of a gene's transcript, from the 5' end to the 3' end. **RNA degradation** typically starts from the ends of RNA molecules, particularly at the 5' end. When RNA is degraded, this results in a coverage bias, typically a noticeable "drop-off" at one or both ends of the transcript. By examining gene body coverage, you can detect whether your RNA samples are intact or degraded.
 
-   
+You can calcuate gene body coverage using the command below:
 
-   You can calcuate the gene body coverage using the command below:
+``` bash
+## 1. calculate gene body coverage
+/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/genebodyCoverage.pl sampleTable.txt
+```
 
-   ``` bash
-   ## 1. calculate gene body coverage
-   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/genebodyCoverage.pl sampleTable.txt
-   ```
+This command will:
 
-   This command will:
+- Generate the script: **`/path-to-save-outputs/sampleID/quantRSEM_STAR/genebodyCoverage.sh`** and submit it to the HPC queue.
 
-   - Generate the script: **`/path-to-save-outputs/sampleID/quantRSEM_STAR/genebodyCoverage.sh`** and submit it to the HPC queue.
+Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs include:
 
-   Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+- **`genebodyCoverage.txt`**: gene body coverage results. It contains the raw counts of reads distributed across each bin of the longest transcripts of **housekeeping (default)** or **all (optional)** genes.
 
-   - gene body coverage results: **`genebodyCoverage.txt`**. It saves the raw counts of reads distributed in each bin of the longest transcripts of housekeeping/all genes.
+- Some other files/folders
 
-   - some other files/folders
+### **2. Individual sample QC report**
 
-2. **Generate QC report for individual samples**
+The QC report for individual samples summarizes key statistics and quality control metrics from the quantification analysis, including:
 
-   The QC report for individual samples summarizes key statistics and quality control metrics of the quantification analysis:
+- **Alignment statistics**: Key statistics of transcriptome alignment.
+- **Quantification statistics**: Numbers of genes and transcripts identified by **Salmon** and **RSEM_STAR**, as well as their overlaps.
+- **Biotype distribution**: Compositon of gene types at both gene and transcript levels.
+- **Quantification accuracy**: Correlation of abundance estimates by **Salmon** and **RSEM_STAR** at both gene and transcript levels.
+- **Genebody coverage statistics**: **Visualization** and statistics of gene body coverage, including **Mean of Coverage**, **Coefficient of Skewness**.
 
-   - Alignment statistics: key statistics of alignment.
+You can generate this QC report using the command below:
 
-   - Quantification statistics: numbers of genes and transcripts identified by Salmon and RSEM_STAR, and their overlaps.
+``` bash
+## 2. generate QC reports for individual samples
+/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/summarizationIndividual.pl sampleTable.txt
+```
 
-   - Biotype distribution: compositons of gene types at both gene- and transcript-level.
+This command will:
 
-   - Quantification accuracy: correlations of abundance quantified by Salmon and RSEM at both gene- and transcript-level.
+- Generate the script: **`/path-to-save-outputs/sampleID/summarization/summarization.sh`** and submit it to HPC queues.
 
-   - Genebody coverage statistics: visualization and statistics of gene body coverage: mean of coverage, coefficient of skewness.
+Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs include:
 
-     
+- **`summarization.html`**: an HTML-format file containg the quality control metrics above (e.g., [example for sample1](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_individual.html)).
 
-   You can generate this QC report using the command below:
+- **`quant.genes.txt`**: **gene-level** quantification resluts by both **Salmon** and **RSEM_STAR**.
 
-   ``` bash
-   ## 2. generate QC reports for individual samples
-   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/summarizationIndividual.pl sampleTable.txt
-   ```
+- **`quant.transcripts.txt`**: **transcript-level** quantification resluts by both **Salmon** and **RSEM_STAR**.
 
-   This command will:
+- Some other files/folders
 
-   - Generate the script: **`/path-to-save-outputs/sampleID/summarization/summarization.sh`** and submit it to the HPC queue.
 
-   Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+### **3. Combined QC report**
 
-   - the HTML QC report: **`summarization.html`** (e.g., [example for sample1](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_individual.html)).
+The QC report for multiple samples **differs slightly** from the single-sample version and includes the following:
 
-   - quantification results by both **Salmon** and **RSEM_STAR**: **`quant.genes.txt`** for genes, and **`quant.transcripts.txt`** for transcripts.
+- **Paths to the gene expression matries summarizing all samples**: Contains paths to matrices of **raw counts**, **TPM** and **FPKM** values at both gene and transcript levels, quantified by **Salmon** and **RSEM_STAR**.
+- **Alignment statistics**: Summarize key transcriptome alignment statistics of all samples.
+- **Quantification statistics**: Reports the number of genes and transcripts identified by **Salmon** and **RSEM_STAR**, their overlaps, and correlations, with all samples combined.
+- **Biotype distribution**: Shows the compositon of gene types at both gene and transcript levels, aggregated across all samples.
+- **Genebody coverage statistics**: Includes visualizations and summary statistics (such as Mean of Coverage, Coefficient of Skewness) for gene body coverage, with all samples combined.
 
-   - some other files/folders
+You can generate this QC report using the command below:
 
-3. **Generate QC report for multiple samples**
+``` bash
+## 3. generate QC reports for multiple samples
+/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/summarizationMultiple.pl sampleTable.txt absolute-path-to-save-outputs
+```
 
-   Slightly different from the one for single samples, the QC report for multiple samples contains:
+This command will first **count the number of reference genome assemblies** (Column #4) present in your **`sampleTable.txt`**, and then:
 
-   - Paths to the universal Gene Expression Matries: These matries are for raw counts, TPM and FPKM measures at both gene- and transcript-level quantified by Salmon and RSEM_STAR.
-   - Alignment statistics: key statistics of alignment, with all samples combined together.
-   - Quantification statistics: numbers of genes and transcripts identified by Salmon and RSEM_STAR, their overlaps and correlations. All samples are combined together.
-   - Biotype distribution: compositons of gene types at both gene- and transcript-level, with all samples combined together.
-   - Genebody coverage statistics: visualization and statistics of gene body coverage: mean of coverage, coefficient of skewness. All samples are combined together.
+- **Create a folder for each reference genome assembly** within the output directory (**`absolute-path-to-save-outputs`**). Each folder will be named using the reference genome assembly string, with any "/" characters replaced by "_". You may rename these folders after the analysis is complete.
+- Splite the **`sampleTable.txt`** by reference genome assembly into seperate tables and save them in the corresponding folders created above (also named **`sampleTable.txt`**).
+- Generate a script (**`summarizationMultiple.sh`**) in each folder and submit them to HPC queues.
 
-   You can generate this QC report using the command below:
+Typically, this step takes **~10 mins** to complete (for 150M PE-100 reads). The stardard outputs include:
 
-   ``` bash
-   ## 3. generate QC reports for multiple samples
-   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/summarizationMultiple.pl sampleTable.txt absolute-path-to-save-outputs
-   ```
+- **`summarizationMultiple.html`**: an HTML-format file containing the quality control metrics above (e.g., [example for hg38](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_multiple.html)).
 
-   This command will first count the number of reference genome assemblies (Column #4) involved in the **`sampleTable.txt`**, and:
+- **`01_expressMatrix.*.txt`**: gene expression matries of **raw counts**, **TPM** and **FPKM** values at both gene and transcript levels, quantified by both **Salmon** and **RSEM_STAR**
 
-   - Create a folder for each reference genome assembly in the directory of `absolute-path-to-save-outputs` named by the string of reference genome assembly with the "/" being replaced by "_". You are free to rename them after the analysis is complete.
-   - Splite the **`sampleTable.txt`** by reference genome assemblies into sub-ones (also named **`sampleTable.txt`**) and save them in the corresponding folders created above.
-   - Generate a script: **`summarizationMultiple.sh`** in each folder and submit them to the HPC queue.
-
-   Typically, this step takes **~10 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
-
-   - the HTML QC report: **`summarizationMultiple.html`** (e.g., [example for sample1](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_multiple.html)).
-
-   - gene expression matries of raw counts, TPM and FPKM, at both gene and transcript levels, and by both **Salmon** and **RSEM_STAR**: **`01_expressMatrix.*.txt`**
-
-   - some other files/folders
+- Some other files/folders
 
 
