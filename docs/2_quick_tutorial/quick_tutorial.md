@@ -270,7 +270,7 @@ The summarization analysis consists of three steps:
 
 2. **Generate QC report for individual samples**
 
-   The QC report for individual samples (e.g., [example for sample1](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_individual.html)) summarizes key statistics and quality control metrics of the quantification analysis:
+   The QC report for individual samples summarizes key statistics and quality control metrics of the quantification analysis:
 
    - Alignment statistics: key statistics of alignment.
 
@@ -303,67 +303,35 @@ The summarization analysis consists of three steps:
 
    - some other files/folders
 
-3. Generate QC report for multiple samples
+3. **Generate QC report for multiple samples**
 
-   Sofas
+   Slightly different from the one for single samples, the QC report for multiple samples contains:
 
-``` bash
-## 0. activate the conda env
-module load conda3/202210
-conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023
+   - Paths to the universal Gene Expression Matries: These matries are for raw counts, TPM and FPKM measures at both gene- and transcript-level quantified by Salmon and RSEM_STAR.
+   - Alignment statistics: key statistics of alignment, with all samples combined together.
+   - Quantification statistics: numbers of genes and transcripts identified by Salmon and RSEM_STAR, their overlaps and correlations. All samples are combined together.
+   - Biotype distribution: compositons of gene types at both gene- and transcript-level, with all samples combined together.
+   - Genebody coverage statistics: visualization and statistics of gene body coverage: mean of coverage, coefficient of skewness. All samples are combined together.
 
-## 1. preprocessing
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/preProcessing.pl sampleTable.txt
+   You can generate this QC report using the command below:
 
-## 2. adapterTrimming
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/adapterTrimming.pl sampleTable.txt
+   ``` bash
+   ## 3. generate QC reports for multiple samples
+   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/summarizationMultiple.pl sampleTable.txt absolute-path-to-save-outputs
+   ```
 
-## 3. quantify by Salmon
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/quantSalmon.pl sampleTable.txt
+   This command will first count the number of reference genome assemblies (Column #4) involved in the **`sampleTable.txt`**, and:
 
-## 4. genebody coverage
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/geneCoverage.pl sampleTable.txt
+   - Create a folder for each reference genome assembly in the directory of `absolute-path-to-save-outputs` named by the string of reference genome assembly with the "/" being replaced by "_". You are free to rename them after the analysis is complete.
+   - Splite the **`sampleTable.txt`** by reference genome assemblies into sub-ones (also named **`sampleTable.txt`**) and save them in the corresponding folders created above.
+   - Generate a script: **`summarizationMultiple.sh`** in each folder and submit them to the HPC queue.
 
-## 5. quantification summary
-/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2023/git_repo/scripts/quantSummary.pl sampleTable.txt
+   Typically, this step takes **~10 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
 
-samtools sort Aligned.toTranscriptome.out.bam -o Aligned.toTranscriptome.out.sortedByCoord.bam
-samtools index Aligned.sortedByCoord.toTranscriptome.out.bam -o ./Aligned.sortedByCoord.toTranscriptome.out.bam.bai
-bedtools multicov -bams Aligned.sortedByCoord.toTranscriptome.out.bam -bed /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48/bulkRNAseq/genebodyBins/genebodyBins_HouseKeepingTranscripts.txt > genebodyCoverage.txt
-```
+   - the HTML QC report: **`summarizationMultiple.html`** (e.g., [example for sample1](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_multiple.html)).
 
+   - gene expression matries of raw counts, TPM and FPKM, at both gene and transcript levels, and by both **Salmon** and **RSEM_STAR**: **`01_expressMatrix.*.txt`**
 
-
-
-
-It's mainly for learning purpose, and you are welcome to go throught them line by line, mainly for learning purposes. In practice, you usually have multiple samples to run, and it could be tedious to run  
-
-There are two parts to set up this pipeline:
-
-- **Software installation**: to install all tools required by this pipeline.
-- **Reference preparation**: to generate reference files used in this pipeline.
-
-For Yu Lab members, we have set this pipeline up on HPC:
-
-- All the tools have been compiled in one conda environment, which can be launched by:
-
-  ``` bash
-  module load conda3/202402
-  conda activate /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025
-  ```
-
-- We have generated the files for four reference genomes: hg38, hg19, mm39 and mm10.
+   - some other files/folders
 
 
-| Genome            | GENCODE release | Release date | Ensembl release | Path                                                         |
-| ----------------- | --------------- | ------------ | --------------- | ------------------------------------------------------------ |
-| hg38 (GRCh38.p14) | v48             | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg38/gencode.release48 |
-| hg19 (GRCh37.p13) | v48lift37*      | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/hg19/gencode.release48 |
-| mm39 (GRCm39)     | vM37            | 05.2025      | v114            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm39/gencode.releaseM37 |
-| mm10 (GRCm38.p6)  | vM25            | 04.2020**    | v100            | /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/yulab_databases/references/mm10/gencode.releaseM25 |
-
-  *: The updates for the hg19/GRCh37 genome assembly have stopped in 2013. However, gene annotation continue to be updated by mapping the comprehensive gene annotations originally created for the GRCh38/hg38 reference chromosomes onto GRCh37 primary assembly using [gencode-backmap](https://github.com/diekhans/gencode-backmap) .
-
-  **: The updates for the mm10/GRCm38 genome assembly and gene annotation have stopped in 2019.
-
-You should run this tutorial only when you want to set up this pipeline locally or complie other reference genome / gene annotation.
