@@ -1,0 +1,279 @@
+---
+title: Bulk RNA-seq Quantification Report
+date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
+output: html_document
+params:
+  sampleName:
+    value: x
+  dir_quant:
+    value: x
+  dir_anno:
+    value: x
+---
+
+```{r library_setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(EnvStats)
+library(knitr)
+library(kableExtra)
+library(plotly)
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r get_sample_info, echo = FALSE}
+sampleName <- params$sampleName
+dir_quant <- params$dir_quant
+dir_anno <- params$dir_anno
+
+dir_output <- paste0(dir_quant, "/summarization")
+```
+
+```{r merge_metrices, echo = FALSE}
+## 1. summarize quantification results of transcripts
+anno_tr <- read.table(paste0(dir_anno, "/annotation.transcriptAnnotation.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+
+quant_tr.rsem <- read.table(paste0(dir_quant, "/quantRSEM_STAR/quant.isoforms.results"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+quant_tr.salmon <- read.table(paste0(dir_quant, "/quantSalmon/quant.sf"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+colnames(quant_tr.salmon) <- c("transcript_id", "Length_Salmon", "EffectiveLength_Salmon", "TPM_Salmon", "NumReads_Salmon")
+master_tr <- dplyr::left_join(anno_tr, quant_tr.rsem[,c(1,3:7)], by = c("transcript_id"))
+master_tr <- dplyr::left_join(master_tr, quant_tr.salmon[,c(1,4,5)], by = "transcript_id")
+master_tr[is.na(master_tr)] <- 0
+
+write.table(master_tr, file = paste0(dir_output, "/quant.transcripts.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+## 2. summarize quantification results of genes
+anno_ge <- read.table(paste0(dir_anno, "/annotation.geneAnnotation.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+quant_ge.rsem <- read.table(paste0(dir_quant, "/quantRSEM_STAR/quant.genes.results"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+quant_ge.salmon <- read.table(paste0(dir_quant, "/quantSalmon/quant.genes.sf"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+colnames(quant_ge.salmon) <- c("gene_id", "Length_Salmon", "EffectiveLength_Salmon", "TPM_Salmon", "NumReads_Salmon")
+
+master_ge <- dplyr::left_join(anno_ge, quant_ge.rsem[,c(1,3:7)], by = c("gene_id"))
+master_ge <- dplyr::left_join(master_ge, quant_ge.salmon[,c(1,4,5)], by = "gene_id")
+master_ge[is.na(master_ge)] <- 0
+
+write.table(master_ge, file = paste0(dir_output, "/quant.genes.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+```
+
+## 1. Alignment statistics
+**Alignment statistics** helps to tell:
+**1）if you have sequenced enough reads?** Usually, **>50M mapped** reads and **>25M uniquely-mapped** reads are expected;
+**2）if your reads have been over-trimmed?** Usually, **>90% Percentage of Filtered Reads** is expected. Over-trimming could happen when the insert size is too small or you picked the wrong Phred score encoding method;
+**3）if your samples are contaminated?** Usually, **>75% Percentage of Mapped Reads** is expected. The most common reason for low mapping rate is the contamination of either DNA or rRNA.
+
+```{r alignment_statistics, echo = FALSE}
+## 3. statistics of adapter trimming
+fltStat <- rjson::fromJSON(file = paste0(dir_quant, "/preProcessing/adapterTrimming.json"))
+n_total <- fltStat$summary$before_filtering$total_reads
+n_filtered <- fltStat$summary$after_filtering$total_reads
+pct_filtered <- round((n_filtered/n_total * 100), 2)
+
+## 4. statistics of alignments by RSEM
+alnStat <- read.table(paste0(dir_quant, "/quantRSEM_STAR/quant.stat/quant.cnt"), header = F, sep = " ", quote = "", stringsAsFactors = F, fill = T, nrows = 3)
+n_mapped <- (alnStat[1,2] + alnStat[1,3]) * 2
+pct_mapped <- round((n_mapped/n_filtered * 100), 2)
+
+n_unique <- alnStat[2,1] * 2
+pct_unique <- round((n_unique/n_mapped * 100), 2)
+
+align_table <- matrix(c(sampleName, n_total, n_filtered, paste0(pct_filtered,"%"), n_mapped, paste0(pct_mapped,"%"), n_unique, paste0(pct_unique,"%")), nrow = 1, byrow = T)
+colnames(align_table) <- c("Sample Name", "Number of Total Reads", "Number of Filtered Reads", "Percentage of Filtered Reads", "Number of Mapped Reads", "Percentage of Mapped Reads", "Number of Uniquely-mapped Reads", "Percentage of Uniquely-mapped Reads")
+
+write.table(align_table, file = paste0(dir_output, "/01_alignmentStatistics.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+align_table %>% kableExtra::kable("html") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+  kableExtra::row_spec(1, color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = F, html_font = "Arial") %>%
+  kableExtra::add_footnote("Percentage of Mapped Reads = Number of Mapped Reads / Number of Filtered Reads\n", notation = "symbol") %>%
+  kableExtra::add_footnote("Percentage of Uniquely-mapped Reads = Number of Uniquely-mapped Reads / Number of Mapped Reads\n", notation = "symbol") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
+
+## 2. Quantification statistics
+**Quantification statistics** helps to tell how accurate the quantification results are:
+**1）how many transcripts/genes were identified confidently?** Usually, **>65K transcripts** and/or **>15K genes** are expected;
+**2）how accurate the quantification is?** Usually, **>0.85 correlation coefficient** is expected.
+
+```{r quantification_statistics, echo=FALSE}
+## 5. quantification statistics of transcripts
+identTr.rsem <- nrow(master_tr[master_tr$expected_count>0,])
+identTr.salmon <- nrow(master_tr[master_tr$NumReads_Salmon>0,])
+master_tr.sel <- master_tr[master_tr$expected_count > 0 & master_tr$NumReads_Salmon >0,]
+identTr.overlap <- nrow(master_tr.sel)
+
+cor_tr.pearson <- cor.test(master_tr.sel$TPM, master_tr.sel$TPM_Salmon, method = "pearson", exact = T)
+pval_tr.pearson <- as.numeric(cor_tr.pearson$p.value); coef_tr.pearson <- as.numeric(cor_tr.pearson$estimate)
+
+cor_tr.spearman <- cor.test(master_tr.sel$TPM, master_tr.sel$TPM_Salmon, method = "spearman", exact = T)
+pval_tr.spearman <- as.numeric(cor_tr.spearman$p.value); coef_tr.spearman <- as.numeric(cor_tr.spearman$estimate)
+
+## 6. quantification statistics of genes
+identGe.rsem <- nrow(master_ge[master_ge$expected_count>0,])
+identGe.salmon <- nrow(master_ge[master_ge$NumReads_Salmon>0,])
+master_ge.sel <- master_ge[master_ge$expected_count > 0 & master_ge$NumReads_Salmon >0,]
+identGe.overlap <- nrow(master_ge.sel)
+
+cor_ge.pearson <- cor.test(master_ge.sel$TPM, master_ge.sel$TPM_Salmon, method = "pearson", exact = T)
+pval_ge.pearson <- as.numeric(cor_ge.pearson$p.value); coef_ge.pearson <- as.numeric(cor_ge.pearson$estimate)
+
+cor_ge.spearman <- cor.test(master_ge.sel$TPM, master_ge.sel$TPM_Salmon, method = "spearman", exact = T)
+pval_ge.spearman <- as.numeric(cor_ge.spearman$p.value); coef_ge.spearman <- as.numeric(cor_ge.spearman$estimate)
+
+quant_table <- matrix(c("Transcript", identTr.rsem, identTr.salmon, identTr.overlap, round(coef_tr.pearson,4), pval_tr.pearson, round(coef_tr.spearman,4), pval_tr.spearman, "Gene", identGe.rsem, identGe.salmon, identGe.overlap, round(coef_ge.pearson,4), pval_ge.pearson, round(coef_ge.spearman,4), pval_ge.spearman), nrow = 2, byrow = T)
+colnames(quant_table) <- c("Levels", "Identified by RSEM", "Identified by Salmon", "Identified by Both","Coef_Pearson", "Pval_Pearson", "rho_Spearman", "Pval_Spearman")
+
+write.table(quant_table, file = paste0(dir_output, "/02_quantificationStatistics.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+quant_table %>% kableExtra::kable("html") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+  kableExtra::row_spec(1:2, color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = F, html_font = "Arial") %>%
+  kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
+
+## 3. Biotype distribution
+**Biotype distribution** provides the composition of types of identified transcripts and genes. Since different bioytpes of transcripts/genes vary hugely in length, GC-content and other properties, **Biotype distribution** could serve as a measure of quantification quality. Empirically,
+**1)** for total RNA libraries, the **protein_coding** transcripts and genes should account for **>40%** and > **50%**, respectively;
+**2)** for mRNA libraries, the **protein_coding** transcripts and genes should accounts for **>80**. For more details about the biotypes: <https://www.gencodegenes.org/pages/biotypes.html>.
+
+```{r biotype_distribution, echo=FALSE}
+## 7. biotype distribution of transcripts
+biotype_tr <- master_tr$transcript_type[master_tr$expected_count >0]
+cutoff_tr <- round(length(biotype_tr) * 0.01)
+
+biotype_tr.tab <- sort(table(biotype_tr), decreasing = T)
+biotype_tr.highlight <- biotype_tr.tab[biotype_tr.tab >= cutoff_tr]
+
+output_tr.highlight <- data.frame(Biotype=names(biotype_tr.highlight),
+                                  Number = as.numeric(biotype_tr.highlight),
+                                  Percent = round(as.numeric(biotype_tr.highlight)/length(biotype_tr) * 100, 2))
+
+output_tr.others <- data.frame(Biotype="Others", Number = length(biotype_tr) - sum(as.numeric(biotype_tr.highlight)),
+                               Percent = round((length(biotype_tr) - sum(as.numeric(biotype_tr.highlight)))/length(biotype_tr) * 100, 2))
+
+output_tr <- rbind(output_tr.highlight, output_tr.others)
+output_tr$Biotypes_transcripts <- paste0(output_tr$Biotype, " (", output_tr$Number, ", ", output_tr$Percent, "%)")
+output_tr$Biotypes_transcripts <- factor(output_tr$Biotypes_transcripts, levels = rev(as.character(output_tr$Biotypes_transcripts)))
+
+p1 <- ggplot2::ggplot(output_tr, aes(x="", y=Number, fill = Biotypes_transcripts)) + geom_bar(stat="identity", width=1, color = "white") +
+  coord_polar("y", start=0) + theme_void() +
+  #geom_text(aes(label = paste0(round(Percent,2), "%")), position = position_stack(vjust = 0.5), size = 2) +
+  #labs(title = "Transcript Level") +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  scale_fill_brewer(palette="Set2") +
+  theme(axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        plot.title = element_text(hjust = 0.5, size = 20))
+ggsave(filename = paste0(dir_output, "/03_biotypeDistribution.transcripts.pdf"), p1, width = 10, height = 7, units = "in")
+
+write.table(output_tr, file = paste0(dir_output, "/03_biotypeDistribution.transcripts.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+## 8. biotype distribution of genes
+biotype_ge <- master_ge$gene_type[master_ge$expected_count >0]
+cutoff_ge <- round(length(biotype_ge) * 0.01)
+
+biotype_ge.tab <- sort(table(biotype_ge), decreasing = T)
+biotype_ge.highlight <- biotype_ge.tab[biotype_ge.tab >= cutoff_ge]
+
+output_ge.highlight <- data.frame(Biotype=names(biotype_ge.highlight),
+                                  Number = as.numeric(biotype_ge.highlight),
+                                  Percent = round(as.numeric(biotype_ge.highlight)/length(biotype_ge) * 100, 2))
+
+output_ge.others <- data.frame(Biotype="Others", Number = length(biotype_ge) - sum(as.numeric(biotype_ge.highlight)),
+                               Percent = round((length(biotype_ge) - sum(as.numeric(biotype_ge.highlight)))/length(biotype_ge) * 100, 2))
+
+output_ge <- rbind(output_ge.highlight, output_ge.others)
+output_ge$Biotypes_genes <- paste0(output_ge$Biotype, " (", output_ge$Number, ", ", output_ge$Percent, "%)")
+output_ge$Biotypes_genes <- factor(output_ge$Biotypes_genes, levels = rev(as.character(output_ge$Biotypes_genes)))
+
+p2 <- ggplot2::ggplot(output_ge, aes(x="", y=Number, fill = Biotypes_genes)) + geom_bar(stat="identity", width=1, color = "white") +
+  coord_polar("y", start=0) + theme_void() +
+  #geom_text(aes(label = paste0(round(Percent,2), "%")), position = position_stack(vjust = 0.5), size = 2) +
+  #labs(title = "Gene Level") +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  scale_fill_brewer(palette="Set2") +
+  theme(axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        plot.title = element_text(hjust = 0.5, size = 20))
+
+ggsave(filename = paste0(dir_output, "/03_biotypeDistribution.genes.pdf"), p2, width = 10, height = 7, units = "in")
+
+write.table(output_ge, file = paste0(dir_output, "/03_biotypeDistribution.genes.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+```
+
+```{r biotype_distribution_plot, fig.width=10, fig.height=3, echo=FALSE}
+pp1 <- cowplot::plot_grid(p1,p2,nrow=1,ncol=2)
+pp1
+```
+
+## 4. Quantification accuracy
+**Quantification accuracy** is evaluated by the cross validation of quantification results by RSEM and Salmon. **>0.8** coefficient for either **Pearson correlation** or **Spearman's rank correlation** is expected.
+
+```{r quantification_accuracy, echo=FALSE}
+p3 <- ggplot2::ggplot(master_tr.sel, aes(x = log2(TPM+1), y = log2(TPM_Salmon+1))) +
+  geom_point(size = 0.5) +
+  labs(x = "Log2(TPM + 1) by RSEM", y = "Log2(TPM + 1) by Salmon", title = paste0("Transcript level: N=", nrow(master_tr.sel), ", R=", round(coef_tr.spearman,2), ", P=", round(pval_tr.spearman, 2))) +
+  theme(
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = "white", color = "black", size = 1),
+    legend.position = "none",
+    axis.title = element_text(size = 10, face = "bold", colour = "black"),
+    axis.text = element_text(size = 8, face = "bold", colour = "black"))
+ggsave(filename = paste0(dir_output, "/04_quantificationAccuracy.transcripts.pdf"), p3, width = 7, height = 7, units = "in", useDingbats = F)
+
+p4 <- ggplot2::ggplot(master_ge.sel, aes(x = log2(TPM+1), y = log2(TPM_Salmon+1))) +
+  geom_point(size = 0.5) +
+  labs(x = "Log2(TPM + 1) by RSEM", y = "Log2(TPM + 1) by Salmon", title = paste0("Gene level: N=", nrow(master_ge.sel), ", R=", round(coef_ge.spearman,2), ", P=", round(pval_ge.spearman, 2))) +
+  theme(
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = "white", color = "black", size = 1),
+    legend.position = "none",
+    axis.title = element_text(size = 10, face = "bold", colour = "black"),
+    axis.text = element_text(size = 8, face = "bold", colour = "black"))
+ggsave(filename = paste0(dir_output, "/04_quantificationAccuracy.genes.pdf"), p4, width = 7, height = 7, units = "in", useDingbats = F)
+```
+
+```{r quantification_accuracy_plot, fig.width=10, fig.height=5, echo=FALSE}
+pp2 <- cowplot::plot_grid(p3,p4,nrow=1,ncol=2)
+pp2
+```
+
+## 5. Genebody coverage statistics
+**Genebody coverage statistics** calculates the RNA-Seq reads overage over gene body.
+**1) Mean of Coverage** is the average coverage of all 100 bins of gene body. Usually, **>0.7** is expected.
+**2) Coefficient of Skewness** is a measure of the asymmetry of the distribution of gene body coverage. **Fisher's moment coefficient of skewness** was calculated by default. The closer to 0, the more symmetric. For more details: <https://en.wikipedia.org/wiki/Skewness>.
+
+```{r genebody_coverage, echo=FALSE}
+gb_coverage <- read.table(paste0(dir_quant, "/quantRSEM_STAR/genebodyCoverage.txt"), header = F, sep = "\t", quote = "", stringsAsFactors = F)
+gb_coverage.sel <- gb_coverage[,4:5];
+gb_coverage.sel$V4 <- gsub(".+Bin(\\d+)", "\\1", gb_coverage.sel$V4)
+gb_coverage.agg <- aggregate(. ~ V4, gb_coverage.sel, sum, na.rm = T)
+colnames(gb_coverage.agg) <- c("GeneBodyBins", "NumberOfReads")
+gb_coverage.agg$PercentOfReads <- gb_coverage.agg$NumberOfReads / max(gb_coverage.agg$NumberOfReads)
+
+write.table(gb_coverage.agg, file = paste0(dir_output, "/05_genebodyCoverage.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+temp.bin <- as.numeric(rep(gb_coverage.agg$GeneBodyBins, gb_coverage.agg$NumberOfReads))
+temp.df <- data.frame(Sample = "wt1", Bins = c(temp.bin, 0))
+temp.df <- data.frame(Sample = "wt1", Bins = c(temp.bin))
+
+pct.mean <- mean(gb_coverage.agg$PercentOfReads)
+coef.skewness <- EnvStats::skewness(temp.bin, na.rm = F, method = "fisher", l.moment.method = "unbiased")
+
+p5 <- ggplot(temp.df, aes(x = Bins)) + geom_density(aes(y = ..scaled..), stat = "density", fill = "red", alpha = 0.5, color = NA) +
+  labs(x = "Gene Body Percentile (5'->3')", y = "Coverage", title = paste0("Mean of Coverage: ", round(pct.mean,4), "; Coefficient of Skewness (Fisher's moment): ", round(coef.skewness,4))) +
+  theme(
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = "white", color = "black", size = 1),
+    legend.position = "none",
+    title = element_text(size = 8, colour = "black"),
+    axis.title = element_text(size = 10, face = "bold", colour = "black"),
+    axis.text = element_text(size = 8, face = "bold", colour = "black")) +
+  scale_x_discrete(limits = as.character(0:100), breaks = c("0","25","50","75","100"))
+ggsave(filename = paste0(dir_output, "/05_genebodyCoverage.pdf"), p5, width = 7, height = 7, units = "in", useDingbats = F)
+```
+
+```{r genebody_coverage_plot, fig.width=5, fig.height=5, echo=FALSE}
+p5
+```

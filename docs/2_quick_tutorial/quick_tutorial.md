@@ -270,7 +270,42 @@ The summarization analysis consists of three steps:
 
 2. **Generate QC report for individual samples**
 
-   Dfasdf
+   The QC report for individual samples (e.g., [example for sample1](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_individual.html)) summarizes key statistics and quality control metrics of the quantification analysis:
+
+   - Alignment statistics: key statistics of alignment.
+
+   - Quantification statistics: numbers of genes and transcripts identified by Salmon and RSEM_STAR, and their overlaps.
+
+   - Biotype distribution: compositons of gene types at both gene- and transcript-level.
+
+   - Quantification accuracy: correlations of abundance quantified by Salmon and RSEM at both gene- and transcript-level.
+
+   - Genebody coverage statistics: visualization and statistics of gene body coverage: mean of coverage, coefficient of skewness.
+
+     
+
+   You can generate this QC report using the command below:
+
+   ``` bash
+   ## 2. generate QC reports for individual samples
+   /research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/scripts/run/summarizationIndividual.pl sampleTable.txt
+   ```
+
+   This command will:
+
+   - Generate the script: **`/path-to-save-outputs/sampleID/summarization/summarization.sh`** and submit it to the HPC queue.
+
+   Typically, this step takes **~5 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+
+   - the HTML QC report: **`summarization.html`** (e.g., [example for sample1](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_individual.html)).
+
+   - quantification results by both **Salmon** and **RSEM_STAR**: **`quant.genes.txt`** for genes, and **`quant.transcripts.txt`** for transcripts.
+
+   - some other files/folders
+
+3. Generate QC report for multiple samples
+
+   Sofas
 
 ``` bash
 ## 0. activate the conda env

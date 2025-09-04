@@ -1,0 +1,328 @@
+---
+title: Bulk RNA-Seq quantification report
+date: '`r strftime(Sys.time(), format = "%B %d, %Y")`'
+output: html_document
+params:
+  sampleTable:
+    value: x
+  dir_anno:
+    value: x
+  dir_output:
+    value: x
+---
+
+```{r library_setup, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(EnvStats)
+library(knitr)
+library(kableExtra)
+library(plotly)
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r get_sample_info, echo = FALSE}
+sample_list <- read.table(params$sampleTable, header = T, sep = "\t", quote = "", stringsAsFactors = F)
+dir <- params$dir_output
+```
+
+## 1. Gene Expression Matries
+
+```{r expression_matrix, echo = FALSE}
+## 1. summarize quantification results of transcripts
+anno_tr <- read.table(paste0(params$dir_anno, "/annotation.transcriptAnnotation.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+
+tr_rsem_count <- data.frame(); tr_rsem_tpm <- data.frame(); tr_rsem_fpkm <- data.frame(); tr_salmon_count <- data.frame(); tr_salmon_tpm <- data.frame();
+for (i in 1:nrow(sample_list)) {
+  temp <- read.table(paste0(sample_list$output[i], "/", sample_list$sampleID[i], "/summarization/quant.transcripts.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+
+  if (i == 1) {
+    tr_rsem_count <- dplyr::left_join(anno_tr, temp[,c("transcript_id", "expected_count")], by = c("transcript_id"))
+    tr_rsem_tpm <- dplyr::left_join(anno_tr, temp[,c("transcript_id", "TPM")], by = c("transcript_id"))
+    tr_rsem_fpkm <- dplyr::left_join(anno_tr, temp[,c("transcript_id", "FPKM")], by = c("transcript_id"))
+    tr_salmon_count <- dplyr::left_join(anno_tr, temp[,c("transcript_id", "NumReads_Salmon")], by = c("transcript_id"))
+    tr_salmon_tpm <- dplyr::left_join(anno_tr, temp[,c("transcript_id", "TPM_Salmon")], by = c("transcript_id"))
+  }
+  else {
+    tr_rsem_count <- dplyr::left_join(tr_rsem_count, temp[,c("transcript_id", "expected_count")], by = c("transcript_id"))
+    tr_rsem_tpm <- dplyr::left_join(tr_rsem_tpm, temp[,c("transcript_id", "TPM")], by = c("transcript_id"))
+    tr_rsem_fpkm <- dplyr::left_join(tr_rsem_fpkm, temp[,c("transcript_id", "FPKM")], by = c("transcript_id"))
+    tr_salmon_count <- dplyr::left_join(tr_salmon_count, temp[,c("transcript_id", "NumReads_Salmon")], by = c("transcript_id"))
+    tr_salmon_tpm <- dplyr::left_join(tr_salmon_tpm, temp[,c("transcript_id", "TPM_Salmon")], by = c("transcript_id"))
+  }
+}
+colnames(tr_rsem_count)[6:ncol(tr_rsem_count)] <- sample_list$sampleID
+write.table(tr_rsem_count, file = paste0(dir, "/01_expressMatrix.transcriptLevel_RSEM_Count.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(tr_rsem_tpm)[6:ncol(tr_rsem_tpm)] <- sample_list$sampleID
+write.table(tr_rsem_tpm, file = paste0(dir, "/01_expressMatrix.transcriptLevel_RSEM_TPM.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(tr_rsem_fpkm)[6:ncol(tr_rsem_fpkm)] <- sample_list$sampleID
+write.table(tr_rsem_fpkm, file = paste0(dir, "/01_expressMatrix.transcriptLevel_RSEM_FPKM.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(tr_salmon_count)[6:ncol(tr_salmon_count)] <- sample_list$sampleID
+write.table(tr_salmon_count, file = paste0(dir, "/01_expressMatrix.transcriptLevel_Salmon_Count.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(tr_salmon_tpm)[6:ncol(tr_salmon_tpm)] <- sample_list$sampleID
+write.table(tr_salmon_tpm, file = paste0(dir, "/01_expressMatrix.transcriptLevel_Salmon_TPM.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+## 2. summarize quantification results of genes
+anno_ge <- read.table(paste0(params$dir_anno, "/annotation.geneAnnotation.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+
+ge_rsem_count <- data.frame(); ge_rsem_tpm <- data.frame(); ge_rsem_fpkm <- data.frame(); ge_salmon_count <- data.frame(); ge_salmon_tpm <- data.frame();
+for (i in 1:nrow(sample_list)) {
+  temp <- read.table(paste0(sample_list$output[i], "/", sample_list$sampleID[i], "/summarization/quant.genes.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+
+  if (i == 1) {
+    ge_rsem_count <- dplyr::left_join(anno_ge, temp[,c("gene_id", "expected_count")], by = c("gene_id"))
+    ge_rsem_tpm <- dplyr::left_join(anno_ge, temp[,c("gene_id", "TPM")], by = c("gene_id"))
+    ge_rsem_fpkm <- dplyr::left_join(anno_ge, temp[,c("gene_id", "FPKM")], by = c("gene_id"))
+    ge_salmon_count <- dplyr::left_join(anno_ge, temp[,c("gene_id", "NumReads_Salmon")], by = c("gene_id"))
+    ge_salmon_tpm <- dplyr::left_join(anno_ge, temp[,c("gene_id", "TPM_Salmon")], by = c("gene_id"))
+  }
+  else {
+    ge_rsem_count <- dplyr::left_join(ge_rsem_count, temp[,c("gene_id", "expected_count")], by = c("gene_id"))
+    ge_rsem_tpm <- dplyr::left_join(ge_rsem_tpm, temp[,c("gene_id", "TPM")], by = c("gene_id"))
+    ge_rsem_fpkm <- dplyr::left_join(ge_rsem_fpkm, temp[,c("gene_id", "FPKM")], by = c("gene_id"))
+    ge_salmon_count <- dplyr::left_join(ge_salmon_count, temp[,c("gene_id", "NumReads_Salmon")], by = c("gene_id"))
+    ge_salmon_tpm <- dplyr::left_join(ge_salmon_tpm, temp[,c("gene_id", "TPM_Salmon")], by = c("gene_id"))
+  }
+}
+colnames(ge_rsem_count)[4:ncol(ge_rsem_count)] <- sample_list$sampleID
+write.table(ge_rsem_count, file = paste0(dir, "/01_expressMatrix.geneLevel_RSEM_Count.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(ge_rsem_tpm)[4:ncol(ge_rsem_tpm)] <- sample_list$sampleID
+write.table(ge_rsem_tpm, file = paste0(dir, "/01_expressMatrix.geneLevel_RSEM_TPM.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(ge_rsem_fpkm)[4:ncol(ge_rsem_fpkm)] <- sample_list$sampleID
+write.table(ge_rsem_fpkm, file = paste0(dir, "/01_expressMatrix.geneLevel_RSEM_FPKM.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(ge_salmon_count)[4:ncol(ge_salmon_count)] <- sample_list$sampleID
+write.table(ge_salmon_count, file = paste0(dir, "/01_expressMatrix.geneLevel_Salmon_Count.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(ge_salmon_tpm)[4:ncol(ge_salmon_tpm)] <- sample_list$sampleID
+write.table(ge_salmon_tpm, file = paste0(dir, "/01_expressMatrix.geneLevel_Salmon_TPM.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+## summary table
+expression_matrix_table <- data.frame(
+  Level = c(rep("Transcript", 5), rep("Gene",5)),
+  Quantifier = c(rep("RSEM", 3), rep("Salmon",2), rep("RSEM", 3), rep("Salmon",2)),
+  Metrics = c(rep(c("Raw counts", "TPM", "FPKM", "Raw counts", "TPM"), 2)),
+  filePath = c(paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_Count.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_TPM.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_FPKM.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.Salmon_Count.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.Salmon_TPM.txt"),
+                paste0(dir, "/01_expressMatrix_geneLevel.RSEM_Count.txt"), paste0(dir, "/01_expressMatrix_geneLevel.RSEM_TPM.txt"), paste0(dir, "/01_expressMatrix_geneLevel.RSEM_FPKM.txt"), paste0(dir, "/01_expressMatrix_geneLevel.Salmon_Count.txt"), paste0(dir, "/01_expressMatrix_geneLevel.Salmon_TPM.txt"))
+)
+
+expression_matrix_table %>% kableExtra::kable("html") %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+  kableExtra::row_spec(1:nrow(expression_matrix_table), color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = F, html_font = "Arial") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
+
+## 2. Alignment statistics
+**Alignment statistics** helps to tell:
+**1）if you have sequenced enough reads?** Usually, **>50M mapped** reads and **>25M uniquely-mapped** reads are expected;
+**2）if your reads have been over-trimmed?** Usually, **>90% Percentage of Filtered Reads** is expected. Over-trimming could happen when the insert size is too small or you picked the wrong Phred score encoding method;
+**3）if your samples are contaminated?** Usually, **>75% Percentage of Mapped Reads** is expected. The most common reason for low mapping rate is the contamination of either DNA or rRNA.
+
+```{r alignment_statistics, echo = FALSE}
+align_table <- data.frame()
+for (i in 1:nrow(sample_list)) {
+  temp <- read.table(paste0(sample_list$output[i], "/", sample_list$sampleID[i], "/summarization/01_alignmentStatistics.txt"), header = F, sep = "\t", quote = "", stringsAsFactors = F)
+  if (i == 1) {align_table <- temp}
+  else {align_table <- rbind(align_table, temp)}
+}
+align_table_unique <- align_table[!duplicated(align_table),]
+
+write.table(align_table_unique, file = paste0(dir, "/02_alignmentStatistics.txt"), col.names = F, row.names = F, sep = "\t", quote = F)
+
+colnames(align_table_unique) <- align_table_unique[1,]
+align_table_unique <- align_table_unique[-1,]
+align_table_unique$`Number of Uniquely-mapped Reads` <- as.numeric(align_table_unique$`Number of Uniquely-mapped Reads`)
+align_table_unique <- align_table_unique[order(align_table_unique$`Number of Uniquely-mapped Reads`, decreasing = T),] # sort the samples by Number of Uniquely-mapped Reads
+align_table_unique %>% kableExtra::kable("html", row.names = F) %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+  kableExtra::add_footnote("Percentage of Mapped Reads = Number of Mapped Reads / Number of Filtered Reads\n", notation = "symbol") %>%
+  kableExtra::add_footnote("Percentage of Uniquely-mapped Reads = Number of Uniquely-mapped Reads / Number of Mapped Reads\n", notation = "symbol") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
+
+## 3. Quantification statistics
+**Quantification statistics** helps to tell how accurate the quantification results are:
+**1）how many transcripts/genes were identified confidently?** Usually, **>65K transcripts** and/or **>15K genes** are expected;
+**2）how accurate the quantification is?** Usually, **>0.85 correlation coefficient** is expected.
+
+```{r quantification_statistics, echo=FALSE}
+quant_table.tr <- data.frame(); quant_table.ge <- data.frame();
+for (i in 1:nrow(sample_list)) {
+  temp <- read.table(paste0(sample_list$output[i], "/", sample_list$sampleID[i], "/summarization/02_quantificationStatistics.txt"), header = F, sep = "\t", quote = "", stringsAsFactors = F)
+  temp.tr <- temp[c(1,2),]; temp.ge <- temp[c(1,3),]
+  temp.tr[2,1] <- sample_list$sampleID[i]; temp.ge[2,1] <- sample_list$sampleID[i]
+  if (i == 1) {quant_table.tr <- temp.tr; quant_table.ge <- temp.ge}
+  else {quant_table.tr <- rbind(quant_table.tr, temp.tr); quant_table.ge <- rbind(quant_table.ge, temp.ge); }
+}
+quant_table_unique.tr <- quant_table.tr[!duplicated(quant_table.tr),]; quant_table_unique.tr[1,1] <- "Sample Name"
+quant_table_unique.ge <- quant_table.ge[!duplicated(quant_table.ge),]; quant_table_unique.ge[1,1] <- "Sample Name"
+
+write.table(quant_table_unique.tr, file = paste0(dir, "/03_quantificationStatistics.transcriptLevel.txt"), col.names = F, row.names = F, sep = "\t", quote = F)
+write.table(quant_table_unique.ge, file = paste0(dir, "/03_quantificationStatistics.geneLevel.txt"), col.names = F, row.names = F, sep = "\t", quote = F)
+```
+
+### 3.1 Transcript level
+```{r quantification_statistics_table_transcripts, echo=FALSE}
+colnames(quant_table_unique.tr) <- quant_table_unique.tr[1,]; colnames(quant_table_unique.tr)[1] <- "Sample Name"
+quant_table_unique.tr <- quant_table_unique.tr[-1,]
+quant_table_unique.tr$rho_Spearman <- as.numeric(quant_table_unique.tr$rho_Spearman)
+quant_table_unique.tr <- quant_table_unique.tr[order(quant_table_unique.tr$rho_Spearman, decreasing = T),] # sort the samples by rho_Spearman
+
+quant_table_unique.tr %>% kableExtra::kable("html", row.names = F) %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+  kableExtra::row_spec(1:nrow(quant_table_unique.tr), color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+  kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
+
+### 3.2 Gene level
+```{r quantification_statistics_table_genes, echo=FALSE}
+colnames(quant_table_unique.ge) <- quant_table_unique.ge[1,]; colnames(quant_table_unique.ge)[1] <- "Sample Name"
+quant_table_unique.ge <- quant_table_unique.ge[-1,]
+quant_table_unique.ge$rho_Spearman <- as.numeric(quant_table_unique.ge$rho_Spearman)
+quant_table_unique.ge <- quant_table_unique.ge[order(quant_table_unique.ge$rho_Spearman, decreasing = T),] # sort the samples by Nrho_Spearman
+
+quant_table_unique.ge %>% kableExtra::kable("html", row.names = F) %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+  kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
+
+## 4. Biotype distribution
+**Biotype distribution** provides the composition of types of identified transcripts and genes. Since different bioytpes of transcripts/genes vary hugely in length, GC-content and other properties, **Biotype distribution** could serve as a measure of quantification quality. Empirically,
+**1)** for total RNA libraries, the **protein_coding** transcripts and genes should account for **>40%** and > **50%**, respectively;
+**2)** for mRNA libraries, the **protein_coding** transcripts and genes should accounts for **>80**. For more details about the biotypes: <https://www.gencodegenes.org/pages/biotypes.html>.
+
+### 4.1 Transcript level
+```{r biotype_distribution_transcripts, echo=FALSE}
+biotype.tr <- data.frame()
+for (i in 1:nrow(sample_list)) {
+  temp <- read.table(paste0(sample_list$output[i], "/", sample_list$sampleID[i], "/summarization/03_biotypeDistribution.transcripts.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+  temp.tr <- data.frame(sampleName = sample_list$sampleID[i], Biotype = temp[,1], Percent = paste0(temp[,3], "%"))
+  if (i == 1) {biotype.tr <- temp.tr}
+  else {biotype.tr <- rbind(biotype.tr, temp.tr)}
+}
+
+biotype_wide.tr <- reshape(biotype.tr, idvar = "sampleName", timevar = "Biotype", direction = "wide")
+colnames(biotype_wide.tr) <- gsub("^Percent.", "", colnames(biotype_wide.tr))
+biotype_wide.tr <- biotype_wide.tr[order(biotype_wide.tr$protein_coding, decreasing = T),]
+write.table(biotype_wide.tr, file = paste0(dir, "/04_biotypeDistribution.transcriptLevel.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+biotype_wide.tr %>% kableExtra::kable("html", row.names = F) %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+  kableExtra::add_footnote("The biotypes of <1% were marked as 'NA' and merged into 'Others'.\n", notation = "symbol") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
+
+### 4.2 Gene level
+```{r biotype_distribution_genes, echo=FALSE}
+biotype.ge <- data.frame()
+for (i in 1:nrow(sample_list)) {
+  temp <- read.table(paste0(sample_list$output[i], "/", sample_list$sampleID[i], "/summarization/03_biotypeDistribution.genes.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+  temp.ge <- data.frame(sampleName = sample_list$sampleID[i], Biotype = temp[,1], Percent = paste0(temp[,3], "%"))
+  if (i == 1) {biotype.ge <- temp.ge}
+  else {biotype.ge <- rbind(biotype.ge, temp.ge)}
+}
+
+biotype_wide.ge <- reshape(biotype.ge, idvar = "sampleName", timevar = "Biotype", direction = "wide")
+colnames(biotype_wide.ge) <- gsub("^Percent.", "", colnames(biotype_wide.ge))
+biotype_wide.ge <- biotype_wide.ge[order(biotype_wide.ge$protein_coding, decreasing = T),]
+write.table(biotype_wide.ge, file = paste0(dir, "/04_biotypeDistribution.geneLevel.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+biotype_wide.ge %>% kableExtra::kable("html", row.names = F) %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+  kableExtra::add_footnote("The biotypes of <1% were marked as 'NA' and merged into 'Others'.\n", notation = "symbol") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
+
+## 5. Genebody coverage statistics
+**Genebody coverage statistics** calculates the RNA-Seq reads overage over gene body.
+**1) Mean of Coverage** is the average coverage of all 100 bins of gene body. Usually, **>0.7** is expected.
+**2) Coefficient of Skewness** is a measure of the asymmetry of the distribution of gene body coverage. **Fisher's moment coefficient of skewness** was calculated by default. The closer to 0, the more symmetric. For more details: <https://en.wikipedia.org/wiki/Skewness>.
+
+```{r genebody_coverage, echo=FALSE}
+## master table
+aggregatedCoverage <- data.frame()
+curveStats <- data.frame()
+for (i in 1:nrow(sample_list)) {
+  temp <- read.table(paste0(sample_list$output[i], "/", sample_list$sampleID[i], "/summarization/05_genebodyCoverage.txt"), header = T, sep = "\t", quote = "", stringsAsFactors = F)
+
+  temp.aggregatedCoverage <- data.frame(sampleName = sample_list$sampleID[i], Bins = temp[,1], Coverage = temp[,3])
+  temp_bins <- as.numeric(rep(temp$GeneBodyBins, temp$NumberOfReads))
+
+  curveStats[i,1] <- sample_list$sampleID[i]
+  curveStats[i,2] <- mean(temp.aggregatedCoverage$Coverage)
+  curveStats[i,3] <- EnvStats::skewness(temp_bins, na.rm = F, method = "fisher", l.moment.method = "unbiased")
+
+  if (i == 1) {aggregatedCoverage <- temp.aggregatedCoverage}
+  else {aggregatedCoverage <- rbind(aggregatedCoverage, temp.aggregatedCoverage)}
+}
+
+aggregatedCoverage_wide <- reshape(aggregatedCoverage, idvar = "Bins", timevar = "sampleName", direction = "wide")
+colnames(aggregatedCoverage_wide) <- gsub("^Coverage.", "", colnames(aggregatedCoverage_wide))
+aggregatedCoverage_wide$Bins <- as.numeric(aggregatedCoverage_wide$Bins)
+aggregatedCoverage_wide <- aggregatedCoverage_wide[order(aggregatedCoverage_wide$Bins, decreasing = F),]
+write.table(aggregatedCoverage_wide, file = paste0(dir, "/05_genebodyCoverage.binCoverage.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+colnames(curveStats) <- c("sampleName", "meanCoverage", "coefSkewness")
+curveStats <- curveStats[order(abs(curveStats[,3]), decreasing = F),]
+write.table(curveStats, file = paste0(dir, "/05_genebodyCoverage.curveStats.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
+
+## plot
+p <- ggplot(aggregatedCoverage, aes(x=Bins, y=Coverage, color=sampleName)) + geom_line(linewidth = 1) +
+  labs(x = "Gene Body Percentile (5'->3')", y = "Coverage") +
+  theme(
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = "white", color = "black", linewidth = 1),
+    legend.position = "right", legend.key.height = unit(0.1, "in"), legend.key.width = unit(0.1, "in"),
+    legend.title = element_text(color = "black", size = 8, face = "bold"), legend.text = element_text(size = 6),
+    axis.title = element_text(size = 10, face = "bold", colour = "black"),
+    axis.text = element_text(size = 8, face = "bold", colour = "black")) +
+  scale_x_discrete(limits = as.character(0:100), breaks = c("0","25","50","75","100"))
+ggplot2::ggsave(filename = paste0(dir, "/05_genebodyCoverage.curvePlot.pdf"), p, width = 10, height = 7, units = "in", useDingbats = F)
+```
+
+<div class = "row">
+<div class = "col-md-8">
+```{r echo=F}
+mastertable <- dplyr::left_join(aggregatedCoverage, curveStats, by = c("sampleName"))
+#write.table(mastertable, file = "/Volumes/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/mastertable.txt", col.names = T, row.names = F, sep = "\t", quote = F)
+#mastertable <- read.table("/Volumes/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/mastertable.txt", header = T, sep = "\t", quote = "", stringsAsFactors = F)
+#mastertable <- read.table("/research_jude/rgs01_jude/groups/yu3grp/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/mastertable.txt", header = T, sep = "\t", quote = "", stringsAsFactors = F)
+pp <- ggplot(mastertable, aes(x=Bins, y=Coverage, color=sampleName)) + geom_line(linewidth = 0.5) +
+  labs(x = "Gene Body Percentile (5'->3')", y = "Coverage") +
+  theme(
+    panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_rect(fill = "white", color = "black", linewidth = 1),
+    axis.title = element_text(size = 10, face = "bold", colour = "black"),
+    axis.text = element_text(size = 8, face = "bold", colour = "black")) +
+    scale_x_discrete(limits = as.character(0:100), breaks = c("0","25","50","75","100"))
+ggplotly(pp, height = 500, width = 600)
+```
+</div>
+
+<div class = "col-md-4">
+```{r echo = F}
+#curveStats <- read.table("/Volumes/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/05_genebodyCoverage.curveStats.txt", header = T, sep = "\t", quote = "", stringsAsFactors = F)
+#curveStats <- read.table("/research_jude/rgs01_jude/groups/yu3grp/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/05_genebodyCoverage.curveStats.txt", header = T, sep = "\t", quote = "", stringsAsFactors = F)
+curveStats %>% kableExtra::kable("html", row.names = F) %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 10) %>%
+  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+  kableExtra::kable_classic(full_width = F, html_font = "Arial") %>%
+  kableExtra::scroll_box(width = "100%", height = "500px")
+```
