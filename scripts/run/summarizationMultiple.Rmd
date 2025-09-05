@@ -26,6 +26,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 sample_list <- read.table(params$sampleTable, header = T, sep = "\t", quote = "", stringsAsFactors = F)
 dir <- params$dir_output
 ```
+\
 
 ## 1. Gene Expression Matries
 
@@ -108,8 +109,8 @@ write.table(ge_salmon_tpm, file = paste0(dir, "/01_expressMatrix.geneLevel_Salmo
 expression_matrix_table <- data.frame(
   Level = c(rep("Transcript", 5), rep("Gene",5)),
   Quantifier = c(rep("RSEM", 3), rep("Salmon",2), rep("RSEM", 3), rep("Salmon",2)),
-  Metrics = c(rep(c("Raw counts", "TPM", "FPKM", "Raw counts", "TPM"), 2)),
-  filePath = c(paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_Count.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_TPM.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_FPKM.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.Salmon_Count.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.Salmon_TPM.txt"),
+  Metric = c(rep(c("Raw counts", "TPM", "FPKM", "Raw counts", "TPM"), 2)),
+  FilePath = c(paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_Count.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_TPM.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.RSEM_FPKM.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.Salmon_Count.txt"), paste0(dir, "/01_expressMatrix_transcriptLevel.Salmon_TPM.txt"),
                 paste0(dir, "/01_expressMatrix_geneLevel.RSEM_Count.txt"), paste0(dir, "/01_expressMatrix_geneLevel.RSEM_TPM.txt"), paste0(dir, "/01_expressMatrix_geneLevel.RSEM_FPKM.txt"), paste0(dir, "/01_expressMatrix_geneLevel.Salmon_Count.txt"), paste0(dir, "/01_expressMatrix_geneLevel.Salmon_TPM.txt"))
 )
 
@@ -120,11 +121,13 @@ expression_matrix_table %>% kableExtra::kable("html") %>%
   kableExtra::scroll_box(width = "100%", height = "500px")
 ```
 
+\
+
 ## 2. Alignment statistics
-**Alignment statistics** helps to tell:
-**1）if you have sequenced enough reads?** Usually, **>50M mapped** reads and **>25M uniquely-mapped** reads are expected;
-**2）if your reads have been over-trimmed?** Usually, **>90% Percentage of Filtered Reads** is expected. Over-trimming could happen when the insert size is too small or you picked the wrong Phred score encoding method;
-**3）if your samples are contaminated?** Usually, **>75% Percentage of Mapped Reads** is expected. The most common reason for low mapping rate is the contamination of either DNA or rRNA.
+**Alignment statistics** is used to tell: \
+**1）If you have sequenced enough reads?** Usually, **>25M mapped** reads and **>10M uniquely-mapped** reads are expected; \
+**2）If your reads have been over-trimmed?** Usually, **>90% Percentage of Filtered Reads** is expected. Over-trimming could happen when the insert size is too small or you picked the wrong Phred score encoding method; \
+**3）If your samples are contaminated?** Usually, **>75% Percentage of Mapped Reads** is expected. The most common reason for low mapping rate is the contamination of either DNA or rRNA.
 
 ```{r alignment_statistics, echo = FALSE}
 align_table <- data.frame()
@@ -141,19 +144,33 @@ colnames(align_table_unique) <- align_table_unique[1,]
 align_table_unique <- align_table_unique[-1,]
 align_table_unique$`Number of Uniquely-mapped Reads` <- as.numeric(align_table_unique$`Number of Uniquely-mapped Reads`)
 align_table_unique <- align_table_unique[order(align_table_unique$`Number of Uniquely-mapped Reads`, decreasing = T),] # sort the samples by Number of Uniquely-mapped Reads
-align_table_unique %>% kableExtra::kable("html", row.names = F) %>%
-  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
-  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
-  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
-  kableExtra::add_footnote("Percentage of Mapped Reads = Number of Mapped Reads / Number of Filtered Reads\n", notation = "symbol") %>%
-  kableExtra::add_footnote("Percentage of Uniquely-mapped Reads = Number of Uniquely-mapped Reads / Number of Mapped Reads\n", notation = "symbol") %>%
-  kableExtra::scroll_box(width = "100%", height = "500px")
+
+if (nrow(sample_list) > 12) {
+    align_table_unique %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("For paired-end libraries, the numbers in the tables count read pairs.\n", notation = "symbol") %>%
+        kableExtra::add_footnote("Percentage of Mapped Reads = Number of Mapped Reads / Number of Filtered Reads\n", notation = "symbol") %>%
+        kableExtra::add_footnote("Percentage of Uniquely-mapped Reads = Number of Uniquely-mapped Reads / Number of Mapped Reads\n", notation = "symbol") %>%
+        kableExtra::scroll_box(width = "100%", height = "500px")
+} else {
+    align_table_unique %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("For paired-end libraries, the numbers in the tables count read pairs.\n", notation = "symbol") %>%
+        kableExtra::add_footnote("Percentage of Mapped Reads = Number of Mapped Reads / Number of Filtered Reads\n", notation = "symbol") %>%
+        kableExtra::add_footnote("Percentage of Uniquely-mapped Reads = Number of Uniquely-mapped Reads / Number of Mapped Reads\n", notation = "symbol")
+}
 ```
 
+\
+
 ## 3. Quantification statistics
-**Quantification statistics** helps to tell how accurate the quantification results are:
-**1）how many transcripts/genes were identified confidently?** Usually, **>65K transcripts** and/or **>15K genes** are expected;
-**2）how accurate the quantification is?** Usually, **>0.85 correlation coefficient** is expected.
+**Quantification statistics** helps to tell how accurate the quantification results are: \
+**1）How many transcripts/genes were identified confidently?** Usually, **>65K transcripts** and/or **>15K genes** are expected; \
+**2）How accurate the quantification is?** Usually, **>0.85 correlation coefficient** is expected.
 
 ```{r quantification_statistics, echo=FALSE}
 quant_table.tr <- data.frame(); quant_table.ge <- data.frame();
@@ -178,12 +195,20 @@ quant_table_unique.tr <- quant_table_unique.tr[-1,]
 quant_table_unique.tr$rho_Spearman <- as.numeric(quant_table_unique.tr$rho_Spearman)
 quant_table_unique.tr <- quant_table_unique.tr[order(quant_table_unique.tr$rho_Spearman, decreasing = T),] # sort the samples by rho_Spearman
 
-quant_table_unique.tr %>% kableExtra::kable("html", row.names = F) %>%
-  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
-  kableExtra::row_spec(1:nrow(quant_table_unique.tr), color = "white", background = "darkblue", bold = T) %>%
-  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
-  kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol") %>%
-  kableExtra::scroll_box(width = "100%", height = "500px")
+if (nrow(sample_list) > 12) {
+    quant_table_unique.tr %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(quant_table_unique.tr), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol") %>%
+        kableExtra::scroll_box(width = "100%", height = "500px")
+} else {
+    quant_table_unique.tr %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(quant_table_unique.tr), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol")
+}
 ```
 
 ### 3.2 Gene level
@@ -193,18 +218,27 @@ quant_table_unique.ge <- quant_table_unique.ge[-1,]
 quant_table_unique.ge$rho_Spearman <- as.numeric(quant_table_unique.ge$rho_Spearman)
 quant_table_unique.ge <- quant_table_unique.ge[order(quant_table_unique.ge$rho_Spearman, decreasing = T),] # sort the samples by Nrho_Spearman
 
-quant_table_unique.ge %>% kableExtra::kable("html", row.names = F) %>%
-  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
-  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
-  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
-  kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol") %>%
-  kableExtra::scroll_box(width = "100%", height = "500px")
+if (nrow(sample_list) > 12) {
+    quant_table_unique.ge %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol") %>%
+        kableExtra::scroll_box(width = "100%", height = "500px")
+} else {
+    quant_table_unique.ge %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("Only co-identified transcripts/genes were used in correlation analysis.\n", notation = "symbol")
+}
 ```
+\
 
 ## 4. Biotype distribution
-**Biotype distribution** provides the composition of types of identified transcripts and genes. Since different bioytpes of transcripts/genes vary hugely in length, GC-content and other properties, **Biotype distribution** could serve as a measure of quantification quality. Empirically,
-**1)** for total RNA libraries, the **protein_coding** transcripts and genes should account for **>40%** and > **50%**, respectively;
-**2)** for mRNA libraries, the **protein_coding** transcripts and genes should accounts for **>80**. For more details about the biotypes: <https://www.gencodegenes.org/pages/biotypes.html>.
+**Biotype distribution** provides the composition of types of identified transcripts and genes. Since different bioytpes of transcripts/genes vary hugely in length, GC-content and other properties, **Biotype distribution** could serve as a measure of quantification quality. Empirically, \
+**1)** For total RNA libraries, the **protein_coding** transcripts and genes should account for **>40%** and > **50%**, respectively;
+**2)** For mRNA libraries, the **protein_coding** transcripts and genes should accounts for **>80**. For more details about the biotypes: <https://www.gencodegenes.org/pages/biotypes.html>.
 
 ### 4.1 Transcript level
 ```{r biotype_distribution_transcripts, echo=FALSE}
@@ -221,12 +255,20 @@ colnames(biotype_wide.tr) <- gsub("^Percent.", "", colnames(biotype_wide.tr))
 biotype_wide.tr <- biotype_wide.tr[order(biotype_wide.tr$protein_coding, decreasing = T),]
 write.table(biotype_wide.tr, file = paste0(dir, "/04_biotypeDistribution.transcriptLevel.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
 
-biotype_wide.tr %>% kableExtra::kable("html", row.names = F) %>%
-  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
-  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
-  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
-  kableExtra::add_footnote("The biotypes of <1% were marked as 'NA' and merged into 'Others'.\n", notation = "symbol") %>%
-  kableExtra::scroll_box(width = "100%", height = "500px")
+if (nrow(sample_list) >12) {
+    biotype_wide.tr %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("The biotypes of <1% were marked as 'NA' and merged into 'Others'.\n", notation = "symbol") %>%
+        kableExtra::scroll_box(width = "100%", height = "500px")
+} else {
+    biotype_wide.tr %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("The biotypes of <1% were marked as 'NA' and merged into 'Others'.\n", notation = "symbol")
+}
 ```
 
 ### 4.2 Gene level
@@ -244,17 +286,26 @@ colnames(biotype_wide.ge) <- gsub("^Percent.", "", colnames(biotype_wide.ge))
 biotype_wide.ge <- biotype_wide.ge[order(biotype_wide.ge$protein_coding, decreasing = T),]
 write.table(biotype_wide.ge, file = paste0(dir, "/04_biotypeDistribution.geneLevel.txt"), col.names = T, row.names = F, sep = "\t", quote = F)
 
-biotype_wide.ge %>% kableExtra::kable("html", row.names = F) %>%
-  kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
-  kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
-  kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
-  kableExtra::add_footnote("The biotypes of <1% were marked as 'NA' and merged into 'Others'.\n", notation = "symbol") %>%
-  kableExtra::scroll_box(width = "100%", height = "500px")
+if (nrow(sample_list) >12) {
+    biotype_wide.ge %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("The biotypes of <1% were marked as 'NA' and merged into 'Others'.\n", notation = "symbol") %>%
+        kableExtra::scroll_box(width = "100%", height = "500px")
+} else {
+    biotype_wide.ge %>% kableExtra::kable("html", row.names = F) %>%
+        kableExtra::kable_styling(bootstrap_options = "striped", font_size = 14) %>%
+        kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%
+        kableExtra::kable_classic(full_width = T, html_font = "Arial") %>%
+        kableExtra::add_footnote("The biotypes of <1% were marked as 'NA' and merged into 'Others'.\n", notation = "symbol")
+}
 ```
+\
 
 ## 5. Genebody coverage statistics
-**Genebody coverage statistics** calculates the RNA-Seq reads overage over gene body.
-**1) Mean of Coverage** is the average coverage of all 100 bins of gene body. Usually, **>0.7** is expected.
+**Genebody coverage statistics** calculates the RNA-Seq reads overage over gene body. \
+**1) Mean of Coverage** is the average coverage of all 100 bins of gene body. Usually, **>0.7** is expected. \
 **2) Coefficient of Skewness** is a measure of the asymmetry of the distribution of gene body coverage. **Fisher's moment coefficient of skewness** was calculated by default. The closer to 0, the more symmetric. For more details: <https://en.wikipedia.org/wiki/Skewness>.
 
 ```{r genebody_coverage, echo=FALSE}
@@ -302,9 +353,6 @@ ggplot2::ggsave(filename = paste0(dir, "/05_genebodyCoverage.curvePlot.pdf"), p,
 <div class = "col-md-8">
 ```{r echo=F}
 mastertable <- dplyr::left_join(aggregatedCoverage, curveStats, by = c("sampleName"))
-#write.table(mastertable, file = "/Volumes/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/mastertable.txt", col.names = T, row.names = F, sep = "\t", quote = F)
-#mastertable <- read.table("/Volumes/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/mastertable.txt", header = T, sep = "\t", quote = "", stringsAsFactors = F)
-#mastertable <- read.table("/research_jude/rgs01_jude/groups/yu3grp/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/mastertable.txt", header = T, sep = "\t", quote = "", stringsAsFactors = F)
 pp <- ggplot(mastertable, aes(x=Bins, y=Coverage, color=sampleName)) + geom_line(linewidth = 0.5) +
   labs(x = "Gene Body Percentile (5'->3')", y = "Coverage") +
   theme(
@@ -318,8 +366,6 @@ ggplotly(pp, height = 500, width = 600)
 
 <div class = "col-md-4">
 ```{r echo = F}
-#curveStats <- read.table("/Volumes/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/05_genebodyCoverage.curveStats.txt", header = T, sep = "\t", quote = "", stringsAsFactors = F)
-#curveStats <- read.table("/research_jude/rgs01_jude/groups/yu3grp/projects/RelapseALL/common/JeffKlco_47AMLBulk/DRpars/Quantification/05_genebodyCoverage.curveStats.txt", header = T, sep = "\t", quote = "", stringsAsFactors = F)
 curveStats %>% kableExtra::kable("html", row.names = F) %>%
   kableExtra::kable_styling(bootstrap_options = "striped", font_size = 10) %>%
   kableExtra::row_spec(1:nrow(sample_list), color = "white", background = "darkblue", bold = T) %>%

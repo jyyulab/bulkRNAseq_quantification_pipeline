@@ -33,8 +33,7 @@ while (<INPUT>) {
             unless (-e "$F[5]/$F[0]/summarization/summarization.sh") {
                 open (OUT, "> $dir_summarization/summarization.sh") or die;
                 print OUT "#BSUB -P bulkRNAseqQuantification\n#BSUB -n 8\n#BSUB -M 8000\n#BSUB -oo $dir_summarization/summarization.out -eo $dir_summarization/summarization.err\n#BSUB -J summarization_$F[0]\n#BSUB -q superdome\n\n";
-                ear
-                rint OUT "Rscript -e \"rmarkdown::render(input = '$dir_rmd/summarizationIndividual.Rmd', clean = TRUE, quiet = F, output_format = 'html_document', output_file = 'summarization.html', output_dir = '$F[5]/$F[0]/summarization', params = list(sampleName = '$F[0]', dir_quant = '$F[5]/$F[0]', dir_anno = '$F[3]'))\"\n";
+                print OUT "Rscript -e \"rmarkdown::render(input = '$dir_rmd/summarizationIndividual.Rmd', clean = TRUE, quiet = F, output_format = 'html_document', output_file = 'summarization.html', output_dir = '$F[5]/$F[0]/summarization', params = list(sampleName = '$F[0]', dir_quant = '$F[5]/$F[0]', dir_anno = '$F[3]'))\"\n";
                 close OUT;
             }
 

@@ -56,7 +56,7 @@ while (<INPUT>) {
 
     if ($F[1] eq "PE") {
         if ((-e "$dir_preProcess/fqClean_R1.fq.gz") and (-e "$dir_preProcess/fqClean_R2.fq.gz")) {
-            print OUT "$dir_bin/rsem-calculate-expression --num-threads 8 --bowtie2 --bowtie2-path $dir_bin --bowtie2-sensitivity-level sensitive --strandedness $libtype --phred33-quals --sort-bam-by-coordinate --paired-end $dir_preProcess/fqClean_R1.fq.gz $dir_preProcess/fqClean_R2.fq.gz $F[3]/bulkRNAseq/RSEM/index_star/assembly $dir_quantRSEM/quant";
+            print OUT "$dir_bin/rsem-calculate-expression --num-threads 8 --bowtie2 --bowtie2-path $dir_bin --bowtie2-sensitivity-level sensitive --strandedness $libtype --phred33-quals --sort-bam-by-coordinate --paired-end $dir_preProcess/fqClean_R1.fq.gz $dir_preProcess/fqClean_R2.fq.gz $F[3]/bulkRNAseq/RSEM/index_bowtie2/assembly $dir_quantRSEM/quant";
         }
         else {
             die "The inputs files, fqClean_R1.fq.gz and fqClean_R1.fq.gz, were not found in $dir_preProcess.\n";
