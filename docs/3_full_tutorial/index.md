@@ -34,7 +34,7 @@ Welcome to the **Full Tutorial** for the bulk RNA-seq quantification pipeline! T
    | sample1   | Human   | PE-100       | FASTQ                 | 38,820,746 (19,410,373*2) | Downsampled from real data |
    | sample2   | Mouse   | SE-50        | FASTQ                 | 16,005,450                | Downsampled from real data |
    | sample3   | Human   | PE-100       | FASTQ, split by lanes | 38,820,746 (19,410,373*2) | Split from sample1         |
-   | sample4   | Human   | SE-50        | FASTQ, split by lanes | 16,005,450                | Split from sample2         |
+   | sample4   | Mouse   | SE-50        | FASTQ, split by lanes | 16,005,450                | Split from sample2         |
    | sample5   | Human   | PE-100       | BAM                   | 27,712,150 (13,856,075*2) | Downsampled from real data |
    | sample6   | Mouse   | SE-50        | BAM                   | 13,533,152                | Downsampled from real data |
    

@@ -170,13 +170,13 @@ Though there are five quantification methods (see the table below) available in 
 - **<u>Salmon</u>**: a wicked-fast alignment-free method. Its accuracy has been further enhanced with the  introduction of **decoy sequences**. <u>*Salmon can automatically determine the strandness of your data, and this information will be utilized by other methods*</u>. These features make it an excellent complement to alignment-based methods for cross-validation purpose.
 - **RSEM_STAR**: an alignment-based method. We prefer STAR to Bowtie2 as the aligner for these two reasons: 1) **STAR** supports splice-aware alignment and hence usually produces higher mappling rates; 2) **STAR** is usually faster.
 
-| Methods      | Aligner                  | Quantifier                   | Measures              | Levels           | Speed *   | Strandness                                              |
-| :----------- | ------------------------ | ---------------------------- | --------------------- | ---------------- | --------- | ------------------------------------------------------- |
-| Salmon       | NA                       | Salmon                       | Raw counts, TPM       | Gene, Transcript | ~30 mins  | automatically infer it                                  |
-| RSEM_STAR    | STAR (splice-aware)      | RSEM                         | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2 hrs   | manually set                                            |
-| RSEM_Bowtie2 | Bowtie2 (splice-unaware) | RSEM                         | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2.5 hrs | manually set                                            |
-| STAR         | STAR (splice-aware)      | STAR (avilable since v2.5.0) | Raw counts            | Gene             | ~ 1 hrs   | Not required for alignment, but need for quantification |
-| STAR_HTSeq   | STAR (splice-aware)      | HTSeq                        | Raw counts            | Gene, Transcript | ~ 1 hrs   | Not required for alignment, but need for quantification |
+| Methods      | Aligner                  | Quantifier                    | Measures              | Levels           | Speed *   | Strandness                                              |
+| :----------- | ------------------------ | ----------------------------- | --------------------- | ---------------- | --------- | ------------------------------------------------------- |
+| Salmon       | NA                       | Salmon                        | Raw counts, TPM       | Gene, Transcript | ~30 mins  | automatically infer it                                  |
+| RSEM_STAR    | STAR (splice-aware)      | RSEM                          | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2 hrs   | manually set                                            |
+| RSEM_Bowtie2 | Bowtie2 (splice-unaware) | RSEM                          | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2.5 hrs | manually set                                            |
+| STAR         | STAR (splice-aware)      | STAR (avilable since v2.4.2a) | Raw counts            | Gene             | ~ 1 hrs   | Not required for alignment, but need for quantification |
+| STAR_HTSeq   | STAR (splice-aware)      | HTSeq                         | Raw counts            | Gene, Transcript | ~ 1 hrs   | Not required for alignment, but need for quantification |
 
 <sup>**\***: tested with 150 million PE-100 reads.</sup>
 
