@@ -22,13 +22,13 @@ If you are using a different conda environment, please change the path according
 
 ## I. Prepare the sample table
 
-The **sample table** is a table summarizing the essential information for all input samples required for quantification analysis.  **It serves as the central input file for the pipeline: every step of this pipeline is performed based on the entries in this table.** Whether you have a single sample or thousands, you can list them all in this table. **This is the only input file required to run this pipeline.**
+The **sample table** is a table summarizing the essential information for all input samples required for quantification analysis. **It serves as the central input file for the pipeline: every step of this pipeline is performed based on the entries in this table.** Whether you have a single sample or thousands, you can list them all in this table. **This is the only input file required to run this pipeline.**
 
  Below is an example of the sample table for this pipeline:
 
 ![image](../figures/sampleTable_template.png)
 
-  It is a **tab-delimited text file with 6 columns**:
+  The sample table is a **tab-delimited text file with 6 columns**:
 
 1) **<u>sampleID</u>**: name of samples. Some rules apply:
    - Should contain **letters**, **numbers** or **underscores ONLY**;
@@ -97,7 +97,7 @@ The **sample table** is a table summarizing the essential information for all in
 
 6. **<u>output</u>**: the directory where output files will be saved. This pipeline will create a subfolder named by the **`sampleID`** within this directory.
 
-
+   
 
 Below are the two ways we recommend to generate the sample table:
 
@@ -128,11 +128,10 @@ To standardize the data format, you can run the command below:
 
 This command will:
 
-- Create a folder, **`sampleID/preProcessing`**, in the output directory specified by the `output` column of sampleTable.txt.
+- Create a folder, **`sampleID/preProcessing`**, in the output directory specified by the **`output`** column of sampleTable.txt.
 
 - Generate the **`sampleID/preProcessing/all2Fastq.sh`** file and submit it to HPC queues.
 
-  
 
 Typically, this step takes **5-10 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
 
@@ -168,15 +167,15 @@ After completing these two preprocessing steps, you will have standard FASTQ fil
 Though there are five quantification methods (see the table below) available in this pipleline, we use **Salmon** and **RSEM_STAR** as the default ones:
 
 - **<u>Salmon</u>**: a wicked-fast alignment-free method. Its accuracy has been further enhanced with the  introduction of **decoy sequences**. <u>*Salmon can automatically determine the strandness of your data, and this information will be utilized by other methods*</u>. These features make it an excellent complement to alignment-based methods for cross-validation purpose.
-- **RSEM_STAR**: an alignment-based method. We prefer STAR to Bowtie2 as the aligner for these two reasons: 1) **STAR** supports splice-aware alignment and hence usually produces higher mappling rates; 2) **STAR** is usually faster.
+- **RSEM_STAR**: an alignment-based method. We prefer STAR to Bowtie2 as the default aligner for these two reasons: 1) **STAR** supports splice-aware alignment and hence usually produces higher mappling rates; 2) **STAR** is generally faster.
 
-| Methods      | Aligner                  | Quantifier                    | Measures              | Levels           | Speed *   | Strandness                                              |
-| :----------- | ------------------------ | ----------------------------- | --------------------- | ---------------- | --------- | ------------------------------------------------------- |
-| Salmon       | NA                       | Salmon                        | Raw counts, TPM       | Gene, Transcript | ~30 mins  | automatically infer it                                  |
-| RSEM_STAR    | STAR (splice-aware)      | RSEM                          | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2 hrs   | manually set                                            |
-| RSEM_Bowtie2 | Bowtie2 (splice-unaware) | RSEM                          | Raw counts, TPM, FPKM | Gene, Transcript | ~ 2.5 hrs | manually set                                            |
-| STAR         | STAR (splice-aware)      | STAR (avilable since v2.4.2a) | Raw counts            | Gene             | ~ 1 hrs   | Not required for alignment, but need for quantification |
-| STAR_HTSeq   | STAR (splice-aware)      | HTSeq                         | Raw counts            | Gene, Transcript | ~ 1 hrs   | Not required for alignment, but need for quantification |
+| Methods       | Aligner                  | Quantifier                    | Measures                  | Levels               | Speed *      | Strandness                                              |
+| :------------ | ------------------------ | ----------------------------- | ------------------------- | -------------------- | ------------ | ------------------------------------------------------- |
+| **Salmon**    | **NA**                   | **Salmon**                    | **Raw counts, TPM**       | **Gene, Transcript** | **~30 mins** | **automatically infer it**                              |
+| **RSEM_STAR** | **STAR (splice-aware)**  | **RSEM**                      | **Raw counts, TPM, FPKM** | **Gene, Transcript** | **~ 2 hrs**  | **manually set**                                        |
+| RSEM_Bowtie2  | Bowtie2 (splice-unaware) | RSEM                          | Raw counts, TPM, FPKM     | Gene, Transcript     | ~ 2.5 hrs    | manually set                                            |
+| STAR          | STAR (splice-aware)      | STAR (avilable since v2.4.2a) | Raw counts                | Gene                 | ~ 1 hrs      | Not required for alignment, but need for quantification |
+| STAR_HTSeq    | STAR (splice-aware)      | HTSeq                         | Raw counts                | Gene, Transcript     | ~ 1 hrs      | Not required for alignment, but need for quantification |
 
 <sup>**\***: tested with 150 million PE-100 reads.</sup>
 
@@ -326,8 +325,7 @@ Typically, this step takes **~10 mins** to complete (for 150M PE-100 reads). The
 
 - **`summarizationMultiple.html`**: an HTML-format file containing the quality control metrics above (e.g., [example for hg38](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_multiple.html)).
 
-- **`01_expressMatrix.*.txt`**: gene expression matries of **raw counts**, **TPM** and **FPKM** values at both gene and transcript levels, quantified by both **Salmon** and **RSEM_STAR**
+- **`01_expressMatrix.*.txt`**: gene expression matries of **raw counts**, **TPM** and **FPKM** values at both gene and transcript levels, quantified by both **Salmon** and **RSEM_STAR**. Thses file can be directly used for downstream anlaysis, such as **DESeq2**, **NetBID**, **limma**, *etc*.
 
 - Some other files/folders
-
 

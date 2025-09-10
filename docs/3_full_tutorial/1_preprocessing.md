@@ -9,39 +9,42 @@ parent: Full Tutorial
 
 ---
 
-## Why is this necessary?
+## Why is Preprocessing necessary?
 
-In a pipeline, it's important to **standardize the inputs** for each step. However, in the real cases, the input data can **very in many aspects**, such as **file format** (e.g., FASTQ, BAM/SAM, FASTA), **Phred quality score encoding method** (e.g., Phred+33, Phred+64), and others. And, most of the RNA-seq data quantifiers or aligners require the input data free with adapter and low-quality sequences. So, we need to preprocess the input data to generate **standard-in-format**, **clean-in-sequence** FASTQ files which can be directly proceed to subsequent quantification analysis.
+In any pipeline, **standardizing input data** is crucial for ensuring smooth and accurate downstream analysis. In practice, input data can **vary widely** in terms of **file format** (e.g., FASTQ, BAM/SAM, FASTA), **Phred quality score encoding method** (e.g., Phred+33, Phred+64), and other attributes. Additionally, most RNA-seq quantification tools, such as quantifiers and aligners, require input data to be free from **adapter contamination** and **low-quality sequences**. So, we need to preprocess the input data to generate **standard-in-format**, **clean-in-sequence** FASTQ files which can be directly proceed to subsequent quantification analysis.
 
 ## 1. Data format standardization
 
-Usually, you have two FASTQ files (R1, R2) for each paired-end sequencing sample (e.g. sample1), or one single FASTQ file for each single-end sequencing sample (e.g. sample2). If so, you are good to move to the **Adapter Trimming** step.
+Typically, paired-end sequencing samples have two FASTQ files (R1 and R2, e.g., test data: sample1), while single-end samples have one (e.g., test data: sample2). If your data matches this format,  you can proceed directly to **Adapter Trimming**.
 
-> **NOTE**: There is an ***exceedingly rare*** situation that your input data is in **interleaved FASTQ** format. In this format, both **mate1** and **mate2** reads are combined in a single FASTQ file. This mean, though you just have one FASTQ file per sample, the library type is paired-end, not single-end. You can split the interleaved FASTQ file using the command below:
+> ***NOTE:***
+>
+> In ***exceedingly rare*** cases, your input data may be an **interleaved FASTQ** file (both **mate1** and **mate2** reads combined in a single file). In this case, although there is only one file per sample, the library type is paired-end. You can split interleaved FASTQ files using the command below:
 >
 > ``` bash
 > ## To split an interleaved FASTQ file
 > fastp --interleaved_in --in1 interleaved.fq --out1 fqRaw_R1.fq.gz --out2 fqRaw_R2.fq.gz
 > ```
 >
-> 
 
-However, if this is not the case, you will need to generate the raw FASTQ files by yourself:
+However, if your data does not match the standard format, you will need to generate the raw FASTQ files by yourself:
 
 * If you start with multiple FASTQ files for each mate, usually generated in different lanes, you need to **merge** them:
 
   ```bash
   ## For paired-end sequencing
-  dir_sample3=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sample3
+  dir_sample3=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sample3 # path to the test data: sample3
   cat $dir_sample3/fqRaw_R1_L001.fq.gz $dir_sample3/fqRaw_R1_L002.fq.gz $dir_sample3/fqRaw_R1_L003.fq.gz $dir_sample3/fqRaw_R1_L004.fq.gz > /path-to-save-outputs/sample3/fqRaw_R1.fq.gz
   cat $dir_sample3/fqRaw_R2_L001.fq.gz $dir_sample3/fqRaw_R2_L002.fq.gz $dir_sample3/fqRaw_R2_L003.fq.gz $dir_sample3/fqRaw_R2_L004.fq.gz > /path-to-save-outputs/sample3/your_path/fqRaw_R2.fq.gz
   
   ## For single-end sequencing
-  dir_sample4=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sample4
+  dir_sample4=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sample4 # path to the test data: sample4
   cat $dir_sample4/fqRaw_L001.fq.gz $dir_sample4/fqRaw_L002.fq.gz $dir_sample4/fqRaw_L003.fq.gz $dir_sample4/fqRaw_L004.fq.gz > /path-to-save-outputs/sample4/fqRaw.fq.gz
   ```
 
-  >  **NOTE:** For the paired-end data, the files of lanes **MUST BE IN THE SAME ORDER** between **mate1** and **mate2**.
+  >  ***NOTE:***
+  >
+  >  For paired-end data, the files of lanes **MUST BE IN THE SAME ORDER** between **mate1** and **mate2**.
 
 * If you start with BAM/SAM files, usually collected from other sources, you need to **convert** them:
 
@@ -51,29 +54,29 @@ However, if this is not the case, you will need to generate the raw FASTQ files 
   ## To tell the BAM/SAM files are single- or paired-end
   samtools view -c -f 1 input.bam
   # This command counts the matching records in the bam/sam file
-  # It returns 0 for single-end sequeing. Otherwise, the input bam/sam file is paired-end.
+  # It returns 0 for single-end; non-zero for paired-end.
   
   ## For paired-end sequencing
-  dir_sample5=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sample5
+  dir_sample5=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sample5 # path to the test data: sample5
   bamtofastq filename=$dir_sample5/rawBAM.toGenome.bam inputformat=bam gz=1 F=/your_path/fqRaw_R1.fq.gz F2=/your_path/fqRaw_R2.fq.gz # If the input file is in SAM format, change inputformat argument from bam to sam
   
   ## For single-end sequencing
-  dir_sample6=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sample6
+  dir_sample6=/research_jude/rgs01_jude/groups/yu3grp/projects/software_JY/yu3grp/conda_env/bulkRNAseq_2025/pipeline/testdata/sample6 # path to the test data: sample6
   bamtofastq filename=$dir_sample6/rawBAM.toTranscriptome.bam inputformat=bam gz=1 S=/your_path/fqRaw.fq.gz # If the input file is in SAM format, change inputformat argument from bam to sam
   ```
 
 <u>**Key outputs:**</u>
 
-- For paired-end sequencing samples, there are two FASTQ files per sample: **`fqRaw_R1.fq.gz`** and **`fqRaw_R2.fq.gz`**
-- For single-end sequencing samples, there are one single file per sample: **`fqRaw.fq.gz`**
+- **`fqRaw_R1.fq.gz`** and **`fqRaw_R2.fq.gz`** for paired-end samples.
+- **`fqRaw.fq.gz`** for single-end samples
 
-Now, though these files are standard-in-format, as noted in the file name, they are still "raw": they contain noisy sequences, and the Phred quality control encoding method could vary.
+These files are now standard in format, but may still contain adapters and low-quality reads.
 
 ## 2. Adapter Trimming
 
-Adapter trimming analysis trims not only the **adapter sequences**, but also the **sequences of unknown or low-quality bases**. It also discards the reads of **too-short length**. So, even though no significant adapter content was found in quality control analysis, it is still highly recommended to perform this analysis to  remove the low-quality reads.
+Adapter trimming analysis removes **adapter sequences**, **unknown or low-quality bases**, and **short reads**. It also discards the reads of **too-short length**. So, even though no significant adapter contaminations was found any quality control analysis (e.g., [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) analysis), trimming is recommended to improve data quality.
 
-We previously employed **[Cutadapt](https://cutadapt.readthedocs.io/en/stable/guide.html)** for adapter trimming. It requires the sequence of adapter(s) and takes ~ two hours for a regular run. Now, we move to the **[fastp](https://github.com/OpenGene/fastp#adapters)** which can automatically detect the adapter sequence(s) and trim much faster.
+We previously employed **[Cutadapt](https://cutadapt.readthedocs.io/en/stable/guide.html)** for adapter trimming. It requires the sequence of adapter(s) and takes ~ two hours for a regular run. Now, we move to **[fastp](https://github.com/OpenGene/fastp#adapters)** which automatically detects the adapter sequence(s) and trims much faster.
 
 ``` bash
 ## For paired-end sequencing
@@ -85,13 +88,17 @@ fastp -w 8 -l 30 -q 20 -n 5 -i /your_path/fqRaw.fq.gz -o /your_path/fqClean.fq.g
 
 **<u>Key arguments:</u>**
 
-* **-6/--phred64**: enable it if the input is using Phred+64 encoding. If enabled, fastp will automatically convert the Thread scores from Phread+64 to Phread+33. So the outputs of fastp are always encoded by Phread+33.
+* **`-6/--phred64`**: Enable it if the input is using **`Phred+64`** encoding. Otherwise, **`Phred+33`** would be used by default.
 
+  If this is enabled, **fastp** will automatically convert to **`Phread+33`**. So, the outputs of **fastp** are **ALWAYS** in **`Phread+33`**.
+
+  > ***TIPS:***
+  >
   > Not sure about the answer? These two guidelines can help you determine the correct Phred encoding method:
   >
-  > - **Phred+64** was retired in late 2011. Data genrated after that time should use **Phred+33**.
+  > - **`Phred+64`** was retired in late 2011. Data genrated after that time should use **`Phred+33`**.
   >
-  > - You can use ***FastQC*** to identify the Phred encoding of your input files: 
+  > - You can use ***[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)*** to identify the Phred encoding of your input files: 
   >
   >   ``` bash
   >   ## To tell the Phred quality score encoding method in FASTQ/BAM/SAM files
@@ -101,18 +108,22 @@ fastp -w 8 -l 30 -q 20 -n 5 -i /your_path/fqRaw.fq.gz -o /your_path/fqClean.fq.g
   >   # "Sanger / Illumina 1.9" indicates Phred33, while "Illumina 1.5 or lower" indicates Phred64.
   >   ```
 
-* **-w/--thread**: number of threads to use concurrently.
+* **`-w/--thread`**: Number of threads to use concurrently.
 
-* **-l/--length_required**: the trimmed reads shorter than this value will be discarded. The deault is 15, but 30 is recommended. The shorter reads tend to have multiple alignments, which may affect the quantification accuracy.
+* **`-l/--length_required`**: Minimum read length required. Any trimmed reads shorter than this value would be discarded.
 
-* **-q/--qualified_quality_phred:** the quality value that a base is qualified. The default is 15, but 20 is recommended.
+  > ***NOTE:***
+  >
+  > The default value by **fastp** is 15, but **we use 30 in this pipeline**. The shorter reads tend to have multiple alignments, which may affect the quantification accuracy.
 
-* **-n/--n_base_limit**: the read/pair with more N bases will be discarded. The default is 5.
+* **`-q/--qualified_quality_phred`**: Minimum base quality required. The default value by **fastp** is 15, but **we use 20 in this pipeline**.
+
+* **`-n/--n_base_limit`**: Maximum unknown (**`N`**) bases allowed per read. Any reads with more **`N`** bases would be discarded. The default value is **5**.
 
 <u>**Key outputs:**</u>
 
-* **fqClean.fq.gz**: FASTQ files with clean reads. And the Phred quality score encoding method is Phred+33.
-* **fastp.html**: an HTML report which summarizes some key matrices, e.g. read counts before and after trimming, insert size, base quality distribution, et. al.
-* **fastp.json**: an json report with same matrices. This file provides the number of reads before and after adapter trimming used in the final QC report.
+* FASTQ files containing clean reads only: **`fqClean_R1.fq.gz`** and **`fqClean_R2.fq.gz`** for paired-end samples, and **`fqClean.fq.gz`** for single-end samples. The Phred quality score encoding method for these files is **`Phred+33`**.
+* **`fastp.html`**: an HTML report summarizing key matrices of adapter trimming and others (e.g., read counts before and after trimming, insert size, base quality distribution)
+* **`fastp.json`**: an JSON report with same matrices as fastp.html. This file is used in Summarization Report generation.
 
-Now, the FASTQ files are both standard-in-format and clean-in-sequence. They are ready for subsequent quantification analysis.
+After completing these two steps, your FASTQ files are both standard-in-format and clean-in-sequence. They are ready for subsequent quantification analysis.

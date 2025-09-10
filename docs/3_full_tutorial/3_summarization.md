@@ -9,23 +9,23 @@ parent: Full Tutorial
 
 ---
 
-## Why is this necessary?
+## Why is Summarization necessary?
 
-After you generate the quantification results using Salmon, RSEM or other tools, you probably ask how reliable the quantification results are. This is saying, we need to assess the quality of the quantification analysis. And, if the quality control results look good, you probably want to generate a general-format file summarizing all samples involved in the quantification analysis, so that most of the tools for down-stream analysis (e.g. differential analysis, clustering analysis) can directly read it. So here come the two main objectives in this analysis:
+After quantification with Salmon, RSEM, or other tools, it's essential to assess the reliability and quality of your quantification results. Summarization analysis here serves two key purposes:
 
-- Perform a comprehensive quality assessment.
+- Comprehensive quality assessment of your quantification analysis
 
-- Generate a universal gene expression matrix containing all samples
+- Generation of a universal gene expression matrix containing all samples, formatted for easy downstream analysis (e.g., diffferential expression, clustering)
 
   
 
 ## 1. Gene body coverage statistics
 
-A major concern for RNA-seq data quality is RNA degradation. RNA molecules are quite fragile, since RNases are everywhere. A exposure to the RNase for a couple of minutes can cause severe degradation of RNA modecules, especially the mRNA. So, we introduced the gene body coverage statistics to help us tell if the input samples are degraded or not. 
+A major concern for RNA-seq data quality is **RNA degradation**. RNA molecules are highly susceptible to degradation by ubiquitous RNases. A exposure to the RNase for a couple of minutes can cause significant RNA decay, especially for mRNA. So, we introduced the gene body coverage statistics to help us tell if the input samples are degraded or not. 
 
 **Gene body coverage** measures how evenly sequencing reads are distributed along the length of a gene's transcript, from the 5' end to the 3' end. **RNA degradation** typically starts from the ends of RNA molecules, particularly at the 5' end. When RNA is degraded, this results in a coverage bias, typically a noticeable "drop-off" at one or both ends of the transcript.
 
-In this pipeline, we pre-bined the longest transcripts of housekeeping genes (default, all-gene version is also available) into 100 fragments of same length (`genebodyBins_housekeeping.txt`). Then we count the reads mapped to each of these fragments from the transcriptome alignments (`quant.transcript.sorted.bam`) using the command below:
+In this pipeline, we bin the longest transcripts of housekeeping genes (default; an all-gene version is also available) into 100 equal-length fragments (**`genebodyBins_housekeeping.txt`**). We then count the reads mapped to each bin using transcriptome alignments (**`quant.transcript.sorted.bam`**):
 
 ```bash
 ## 1. gene body coverage statistics
@@ -40,11 +40,11 @@ bedtools multicov \
 	-bed /path-to-database/bulkRNAseq/genebodyBins/genebodyBins_all.txt > /path-to-save-outputs/quantRSEM_STAR/genebodyCoverage.txt
 ```
 
-The only output in this step is the `genebodyCoverage.txt` file. It contains the counts of reads mapped to each of the pre-generated bins of selected transcripts. This file will be used to generate the HTML quality control report.
+The only output in this step is the **`genebodyCoverage.txt`** file. It contains the counts of reads mapped to each of the pre-generated bins of selected transcripts. This file will be used to generate the HTML quality control report.
 
 ## 2. Individual sample QC report
 
-The QC report for individual samples (see below) summarizes key statistics and quality control metrics from the quantification analysis, including:
+The QC report for individual samples (see below) summarizes key statistics and quality control metrics from the preprocessing and quantification analyses, including:
 
 - **Alignment statistics**: Key statistics of transcriptome alignment.
 - **Quantification statistics**: Numbers of genes and transcripts identified by **Salmon** and **RSEM_STAR**, as well as their overlaps.
@@ -122,9 +122,9 @@ This command will first **count the number of reference genome assemblies** (Col
 
 Typically, this step takes **~10 mins** to complete (for 150M PE-100 reads). The stardard outputs include:
 
-- **`summarizationMultiple.html`**: an HTML-format file containing the quality control metrics above (e.g., [example for hg38](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_multiple.html)).
+- **`summarizationMultiple.html`**: An HTML-format file containing the quality control metrics above (e.g., [example for hg38](https://github.com/jyyulab/bulkRNAseq_quantification_pipeline/blob/main/testdata/summarization_multiple.html)).
 
-- **`01_expressMatrix.*.txt`**: gene expression matries of **raw counts**, **TPM** and **FPKM** values at both gene and transcript levels, quantified by both **Salmon** and **RSEM_STAR**
+- **`01_expressMatrix.*.txt`**: Gene expression matries of **raw counts**, **TPM** and **FPKM** values at both gene and transcript levels, quantified by both **Salmon** and **RSEM_STAR**. Thses file can be directly used for downstream anlaysis, such as **DESeq2**, **NetBID**, **limma**, *etc*.
 
 - Some other files/folders
 
