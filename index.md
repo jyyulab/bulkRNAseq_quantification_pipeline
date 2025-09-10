@@ -57,7 +57,7 @@ Every step of the pipeline has been optimized for ease of use, maintenance and s
 
   ![Picture](./docs/figures/file_structure.png)
 
-- Time-consuming steps, such as gene body coverage analysis, has been optimized. **Now a typical run completes in about 2.5 hours**.
+- Time-consuming steps, such as gene body coverage analysis, has been optimized. **Now a typical run completes in about 1.5 hours**.
 
   ![Picture](./docs/figures/task_duration.png)
 
