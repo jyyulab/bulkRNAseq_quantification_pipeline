@@ -193,7 +193,7 @@ This command will:
 - Create a folder: **`/path-to-save-outputs/sampleID/quantSalmon`**
 - Generate the script: **`/path-to-save-outputs/sampleID/quantSalmon/quantSalmon.sh`** and submit it to the HPC queue.
 
-Typically, this step takes **~30 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
+Typically, this step takes **~15 mins** to complete (for 150M PE-100 reads). The stardard outputs are:
 
 - **`quant.genes.sf`**: **gene-level** quantification results
 
@@ -225,7 +225,7 @@ This command will:
 - Create a folder: **`/path-to-save-outputs/sampleID/quantRSEM_STAR`**
 - Generate the script: **`/path-to-save-outputs/sampleID/quantRSEM_STAR/quantRSEM_STAR.sh`** and submit it to the HPC queue.
 
-Typically, this step takes **~2 hrs** to complete (for 150M PE-100 reads). The stardard outputs are:
+Typically, this step takes **~1 hrs** to complete (for 150M PE-100 reads). The stardard outputs are:
 
 - **`quant.genes.results`**: **gene-level** quantificaiton results
 - **`quant.isoforms.results`**: **transcript-level** quantificaiton results
