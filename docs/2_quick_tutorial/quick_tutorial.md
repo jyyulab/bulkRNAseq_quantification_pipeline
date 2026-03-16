@@ -43,6 +43,19 @@ The **sample table** is a table summarizing the essential information for all in
      samtools view -c -f 1 input.bam
      # This command counts the matching records in the bam/sam file.
      # It returns 0 for single-end sequeing. Otherwise, the input bam/sam file is paired-end.
+     
+     # Loop over all BAM files in a directory
+     for file in /path-to-directory/*.bam; do
+       [ -e "$file" ] || continue # Skip if no matching files
+       echo "Processing: $file"
+       
+       # Run samtools and capture output
+       if output=$(samtools view -c -f 1 "$file" 2>/dev/null); then
+       	printf "$file\t$output\n" >> ./01_libraryType.txt
+      	else
+      		echo "Error processing $file" >&2
+      	fi
+     done
      ```
 
    - For FASTQ file inputs, you typically have two paired files for **`PE`** data or one single file for **`SE`**data. An exception, though exceedingly rare, is an **interleaved** FASTQ file, where both **mate1** and **mate2** reads are combined in a single file. ***This pipeline does not support interleaved FASTQ files as standard input.*** If you data is in this format, you will need to split it into two seperate FASTQ files before including them in your sample table.
@@ -67,6 +80,19 @@ The **sample table** is a table summarizing the essential information for all in
      fastqc input.bam # for BAM/SAM files
      # This command generates a html report. In the "Basic Statistics" section, there is a measure called "Endcoding":
      # "Sanger / Illumina 1.9" indicates Phred33, while "Illumina 1.5 or lower" indicates Phred64.
+     
+     # Loop over all BAM files in the current directory
+     for file in /path-to-directory/*.bam; do
+     	[ -e "$file" ] || continue # Skip if no matching files
+       echo "Processing: $file"
+       
+       # Run samtools and capture output (from top 10000 reads)
+     	if output=$(samtools view "$file" | head -n 10000 | awk '{print $11}' | tr -d '\n' | od -An -t u1 | sed 's/\*//g' | awk '{for (i=1;i<=NF;i++) print $i}' | sort -n | awk 'NR==1{min=$1} {max=$1} END{print min,"\t",max}' 2>/dev/null); then
+     		printf "$file\t$output\n" >> ./02_phredScore.txt
+     	else
+     		echo "Error processing $file" >&2
+     	fi
+     done
      ```
 
 4. **<u>reference</u>**: path to reference genome database folder. This pipeline contains four pre-built databases:
