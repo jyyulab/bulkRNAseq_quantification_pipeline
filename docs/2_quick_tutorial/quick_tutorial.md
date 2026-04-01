@@ -76,10 +76,16 @@ The **sample table** is a table summarizing the essential information for all in
 
      ``` bash
      ## To tell the Phred quality score encoding method in FASTQ/BAM/SAM files
+     # Method 1: use fastqc (good for small sample size)
      fastqc input.fq.gz # for FASTQ files
      fastqc input.bam # for BAM/SAM files
      # This command generates a html report. In the "Basic Statistics" section, there is a measure called "Endcoding":
      # "Sanger / Illumina 1.9" indicates Phred33, while "Illumina 1.5 or lower" indicates Phred64.
+     
+     # Method 2: use samtools (good for large sample size, BAM files only)
+     samtools view input.bam | head -n 10000 | awk '{print $11}' | tr -d '\n' | od -An -t u1 | sed 's/\*//g' | awk '{for (i=1;i<=NF;i++) print $i}' | sort -n | awk 'NR==1{min=$1} {max=$1} END{print min,"\t",max}'
+     # This command prints two numbers: the first number indicates the smallest ASCII value of bases in top 10000 reads, while the sencond one indicates the largest ASCII value.
+     # Phred33 uses ASCII 33-126, while Phred64 uses 64-128.
      
      # Loop over all BAM files in the current directory
      for file in /path-to-directory/*.bam; do
